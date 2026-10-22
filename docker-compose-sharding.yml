@@ -1,0 +1,75 @@
+version: '3.8'
+
+# ==============================================================================
+# MongoDB Sharded Cluster Deployment (Member 3 - Distributed Storage)
+# ==============================================================================
+# Architecture:
+# - Config Server Replica Set (configsvr-rs): 1 primary node (port 27019)
+# - Shard 1 Replica Set (shard1-rs): 1 primary node (port 27018)
+# - Shard 2 Replica Set (shard2-rs): 1 primary node (port 27028)
+# - Mongos Query Router: Entrypoint for applications (port 27017)
+# - Redis Cache (port 6379)
+# ==============================================================================
+
+services:
+  # 1. Config Server Replica Set
+  configsvr:
+    image: mongo:7.0
+    container_name: library-configsvr
+    restart: always
+    command: mongod --configsvr --replSet configsvr-rs --port 27019 --bind_ip_all
+    ports:
+      - "27019:27019"
+    volumes:
+      - configsvr-data:/data/db
+
+  # 2. Shard 1 Replica Set
+  shard1:
+    image: mongo:7.0
+    container_name: library-shard1
+    restart: always
+    command: mongod --shardsvr --replSet shard1-rs --port 27018 --bind_ip_all
+    ports:
+      - "27018:27018"
+    volumes:
+      - shard1-data:/data/db
+
+  # 3. Shard 2 Replica Set
+  shard2:
+    image: mongo:7.0
+    container_name: library-shard2
+    restart: always
+    command: mongod --shardsvr --replSet shard2-rs --port 27028 --bind_ip_all
+    ports:
+      - "27028:27028"
+    volumes:
+      - shard2-data:/data/db
+
+  # 4. Mongos Query Router
+  mongos:
+    image: mongo:7.0
+    container_name: library-mongos
+    restart: always
+    depends_on:
+      - configsvr
+      - shard1
+      - shard2
+    command: mongos --configdb configsvr-rs/configsvr:27019 --port 27017 --bind_ip_all
+    ports:
+      - "27017:27017"
+
+  # 5. Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: library-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  configsvr-data:
+  shard1-data:
+  shard2-data:
+  redis-data:

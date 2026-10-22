@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scalable Library Management Platform</title>
+  <meta name="description" content="High-Performance Library Management Platform: Distributed Snowflake IDs, In-Memory Trie Autocomplete, Redis Cache-Aside & MongoDB Sharded Storage Ring">
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Top Hover Trigger Area (Invisible boundary at top of viewport) -->
+  <div id="top-nav-trigger" class="top-nav-trigger" aria-label="Hover trigger for navigation"></div>
+
+  <!-- Minimalist Floating Peek Indicator Pill -->
+  <div id="nav-peek-indicator" class="nav-peek-indicator" title="Hover to reveal navigation bar">
+    <span class="peek-dot"></span>
+    <span class="peek-icon">📚</span>
+    <span class="peek-text">Navigation</span>
+    <span class="peek-chevron">▾</span>
+  </div>
+
+  <!-- Top Floating Glass Navigation Bar -->
+  <header id="top-navbar" class="top-navbar">
+    <div class="top-navbar-container">
+      
+      <!-- Brand Section -->
+      <div class="brand-section" onclick="Router.navigate('dashboard')" role="button" tabindex="0" title="Go to Dashboard">
+        <div class="brand-logo-icon">📚</div>
+        <div class="brand-info">
+          <h2>LMS Portal</h2>
+          <span class="brand-badge">Enterprise Edition</span>
+        </div>
+      </div>
+
+      <!-- Main Horizontal Navigation Menu -->
+      <nav class="nav-menu" id="main-nav-menu">
+        <a class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a class="nav-item" data-view="catalogue" id="nav-catalogue">
+          <span class="nav-icon">📖</span>
+          <span class="nav-label">Catalogue</span>
+        </a>
+        <a class="nav-item" data-view="discovery" id="nav-discovery">
+          <span class="nav-icon">🔍</span>
+          <span class="nav-label">Discovery & Cache</span>
+        </a>
+        <a class="nav-item" data-view="benchmark" id="nav-benchmark">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Unique ID Gen</span>
+        </a>
+        <a class="nav-item" data-view="distribution" id="nav-distribution">
+          <span class="nav-icon">🌐</span>
+          <span class="nav-label">Storage Ring</span>
+        </a>
+
+        <!-- Member Only Menu -->
+        <div id="nav-member-group" class="nav-dynamic-group" style="display: none;">
+          <div class="nav-group-divider"></div>
+          <a class="nav-item" data-view="member" id="nav-member">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">My Library</span>
+          </a>
+        </div>
+
+        <!-- Admin Only Menu -->
+        <div id="nav-admin-group" class="nav-dynamic-group" style="display: none;">
+          <div class="nav-group-divider"></div>
+          <a class="nav-item" data-view="admin" id="nav-admin">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Admin Portal</span>
+          </a>
+        </div>
+
+        <!-- Guest Only Menu -->
+        <div id="nav-guest-group" class="nav-dynamic-group">
+          <div class="nav-group-divider"></div>
+          <a class="nav-item" data-view="login" id="nav-login">
+            <span class="nav-icon">🔐</span>
+            <span class="nav-label">Sign In</span>
+          </a>
+          <a class="nav-item btn-nav-cta" data-view="register" id="nav-register">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">Register</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Right Actions: User Profile Card & Pin Navbar Toggle -->
+      <div class="navbar-right-actions">
+        <!-- User Card (Populated by Auth.js) -->
+        <div class="user-card" id="sidebar-user-card" style="display: none;">
+          <div class="user-avatar" id="user-avatar">A</div>
+          <div class="user-details">
+            <div class="user-name" id="user-display-name">Alice Johnson</div>
+            <span class="user-role-badge member" id="user-role-badge">MEMBER</span>
+          </div>
+          <button class="btn-logout" title="Sign Out" onclick="Auth.logout()">🚪</button>
+        </div>
+
+        <!-- Pin Navbar Toggle Button -->
+        <button id="btn-pin-nav" class="btn-pin-nav" title="Pin / Unpin Navbar" onclick="App.toggleNavPin()">
+          <span id="pin-icon" class="pin-icon">📌</span>
+          <span class="pin-text">Pin Bar</span>
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button class="btn-mobile-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu">☰</button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-container">
+    <div class="main-wrapper">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-title-wrap">
+          <div class="page-heading">
+            <h1>Scalable Library Management Platform</h1>
+            <p>Cloud-native catalogue management, intelligent search engine, and distributed storage cluster</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="badge-concept badge-snowflake">
+            <span class="badge-icon">🛡️</span>
+            <span>Distributed Snowflake IDs</span>
+          </div>
+          <div class="badge-concept badge-redis">
+            <span class="badge-icon">⚡</span>
+            <span>Redis Cache & Trie Engine</span>
+          </div>
+          <div class="badge-concept badge-cluster">
+            <span class="badge-icon">🌐</span>
+            <span>Consistent Hash Storage Ring</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dynamic Content Views -->
+      <main class="content-body">
+        
+        <!-- ================= VIEW 1: DASHBOARD ================= -->
+        <section id="view-dashboard" class="view-section active">
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="card stat-card">
+              <div class="stat-icon-wrap books">📚</div>
+              <div class="stat-content">
+                <h3 id="stat-total-books">0</h3>
+                <p>Total Titles in Catalogue</p>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-icon-wrap available">✅</div>
+              <div class="stat-content">
+                <h3 id="stat-available-books">0</h3>
+                <p>Available for Borrowing</p>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-icon-wrap loans">🔄</div>
+              <div class="stat-content">
+                <h3 id="stat-active-loans">0</h3>
+                <p>Active Borrowing Loans</p>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-icon-wrap reservations">⏳</div>
+              <div class="stat-content">
+                <h3 id="stat-total-reservations">0</h3>
+                <p>Pending Reservations</p>
+              </div>
+            </div>
+
+            <div class="card stat-card">
+              <div class="stat-icon-wrap fines">💵</div>
+              <div class="stat-content">
+                <h3 id="stat-pending-fines">$0.00</h3>
+                <p>Pending Overdue Fines</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Architecture Overview Banner -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px;" class="dashboard-hero-grid">
+            <div class="card">
+              <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Enterprise Architecture Overview</h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 22px;">
+                Complete digital library suite featuring high-concurrency Snowflake unique identification, sub-millisecond Redis caching, intelligent catalogue discovery with in-memory Trie autocomplete, and consistent hash partition routing for horizontal database scaling.
+              </p>
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="Router.navigate('catalogue')">📖 Browse Catalogue</button>
+                <button class="btn btn-outline" onclick="Router.navigate('benchmark')">⚡ Unique ID Generator</button>
+                <button class="btn btn-outline" onclick="Router.navigate('discovery')">🔍 Cache & Autocomplete</button>
+              </div>
+            </div>
+
+            <div class="card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(6, 182, 212, 0.05)); border-color: rgba(99, 102, 241, 0.2);">
+              <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; color: var(--primary-600);">Quick Demo Accounts</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">One-click login to test different role permissions:</p>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-outline btn-sm" onclick="Auth.login('admin@library.com', 'Admin@123')">
+                  🔑 Login as <strong>Admin</strong> (admin@library.com)
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="Auth.login('alice@example.com', 'Alice@123')">
+                  👤 Login as <strong>Alice</strong> (Active loan & overdue fine)
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="Auth.login('bob@example.com', 'Bob@123')">
+                  👤 Login as <strong>Bob</strong> (Active reservation queue)
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 2: BOOK CATALOGUE ================= -->
+        <section id="view-catalogue" class="view-section">
+          <!-- Search & Filter Controls -->
+          <div class="search-filter-bar">
+            <div class="search-input-wrap">
+              <span class="search-icon-inside">🔍</span>
+              <input type="text" id="catalogue-search-input" placeholder="Search by title, author, or ISBN..." oninput="Books.handleSearch(this.value)">
+            </div>
+
+            <div class="category-chips">
+              <button class="chip active" data-category="ALL" onclick="Books.setCategory('ALL')">All Categories</button>
+              <button class="chip" data-category="System Architecture" onclick="Books.setCategory('System Architecture')">System Architecture</button>
+              <button class="chip" data-category="Computer Science" onclick="Books.setCategory('Computer Science')">Computer Science</button>
+              <button class="chip" data-category="Software Engineering" onclick="Books.setCategory('Software Engineering')">Software Engineering</button>
+              <button class="chip" data-category="Databases" onclick="Books.setCategory('Databases')">Databases</button>
+              <button class="chip" data-category="DevOps & SRE" onclick="Books.setCategory('DevOps & SRE')">DevOps & SRE</button>
+              <button class="chip" data-category="Algorithms" onclick="Books.setCategory('Algorithms')">Algorithms</button>
+            </div>
+          </div>
+
+          <!-- Books Grid -->
+          <div id="books-catalogue-grid" class="books-grid"></div>
+
+          <!-- Pagination -->
+          <div id="books-pagination"></div>
+        </section>
+
+        <!-- ================= VIEW 3: MEMBER DASHBOARD ================= -->
+        <section id="view-member" class="view-section">
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Member Portal</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage active loans, return books, track reservations, and settle overdue fines.</p>
+          </div>
+
+          <!-- Active Loans Section -->
+          <div class="card" style="margin-bottom: 24px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">📖 Currently Borrowed Books</h3>
+            <div id="member-active-loans-list"></div>
+          </div>
+
+          <!-- Reservations Section -->
+          <div class="card" style="margin-bottom: 24px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">⏳ Active Reservations & Queue Status</h3>
+            <div id="member-reservations-list"></div>
+          </div>
+
+          <!-- Overdue Fines Section -->
+          <div class="card" style="margin-bottom: 24px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">💵 Overdue Fines & Payment History</h3>
+            <div id="member-fines-list"></div>
+          </div>
+
+          <!-- Past Loan History -->
+          <div class="card">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">📜 Loan History (Returned Books)</h3>
+            <div id="member-loan-history-list"></div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 4: ADMIN DASHBOARD ================= -->
+        <section id="view-admin" class="view-section">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Library Staff Administration</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Catalogue management, inventory control, loan records, and member directory.</p>
+            </div>
+            <button class="btn btn-primary" onclick="Admin.openAddBookModal()">+ Add New Book</button>
+          </div>
+
+          <!-- Admin Tabs -->
+          <div class="category-chips" style="margin-bottom: 20px;">
+            <button class="chip active admin-tab-btn" data-tab="books" onclick="Admin.switchTab('books')">📚 Book Management</button>
+            <button class="chip admin-tab-btn" data-tab="loans" onclick="Admin.switchTab('loans')">🔄 All Active/Past Loans</button>
+            <button class="chip admin-tab-btn" data-tab="reservations" onclick="Admin.switchTab('reservations')">⏳ Reservation Queues</button>
+            <button class="chip admin-tab-btn" data-tab="members" onclick="Admin.switchTab('members')">👥 Registered Members</button>
+          </div>
+
+          <!-- Tab Pane: Books -->
+          <div id="admin-pane-books" class="card admin-tab-pane">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Book ID</th>
+                    <th>Title</th>
+                    <th>Authors</th>
+                    <th>ISBN</th>
+                    <th>Category</th>
+                    <th>Stock (Avail / Total)</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-books-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab Pane: Loans -->
+          <div id="admin-pane-loans" class="card admin-tab-pane" style="display: none;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Loan ID</th>
+                    <th>Member ID</th>
+                    <th>Book ID</th>
+                    <th>Borrowed Date</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-loans-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab Pane: Reservations -->
+          <div id="admin-pane-reservations" class="card admin-tab-pane" style="display: none;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Reservation ID</th>
+                    <th>Member ID</th>
+                    <th>Book ID</th>
+                    <th>Reserved Time</th>
+                    <th>Queue Pos</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-reservations-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab Pane: Members -->
+          <div id="admin-pane-members" class="card admin-tab-pane" style="display: none;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Member ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Phone</th>
+                    <th>Joined</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-members-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 5: UNIQUE ID GENERATOR BENCHMARK ================= -->
+        <section id="view-benchmark" class="view-section">
+          <div style="margin-bottom: 24px;">
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Distributed Unique ID Generator</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              High-concurrency, collision-free 64-bit Snowflake identification with Base62 encoding for global entity tracking.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;" class="benchmark-grid">
+            <!-- Benchmark Control Panel -->
+            <div class="card benchmark-card">
+              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">Concurrent Collision Benchmark</h3>
+              <div class="form-group">
+                <label>Number of Unique IDs to Generate</label>
+                <input type="number" class="form-control" id="bench-count" value="10000" min="100" max="100000" step="1000">
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Concurrency Threads</label>
+                  <input type="number" class="form-control" id="bench-threads" value="8" min="1" max="32">
+                </div>
+                <div class="form-group">
+                  <label>ID Generator Strategy</label>
+                  <select class="form-control" id="bench-strategy">
+                    <option value="snowflake">Distributed Snowflake (Base62)</option>
+                    <option value="tsid">Time-Sorted ID (TSID Base32)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" id="btn-run-bench" onclick="Benchmark.runLiveBenchmark()" style="width: 100%;">
+                🚀 Run Concurrent Benchmark
+              </button>
+            </div>
+
+            <!-- Single ID Generation Playground -->
+            <div class="card">
+              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">Interactive ID Generation Playground</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Generate individual collision-resistant IDs across each domain prefix:
+              </p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('book')">📖 Book (BK-)</button>
+                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('member')">👤 Member (MEM-)</button>
+                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('loan')">🔄 Loan (LN-)</button>
+                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('reservation')">⏳ Reservation (RES-)</button>
+                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('transaction')">💳 Fine Txn (TXN-)</button>
+              </div>
+
+              <div id="playground-result">
+                <div class="card-subtle-box" style="padding: 16px; border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-dim); text-align: center;">
+                  Click any button above to generate a live identifier.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Benchmark Results Display -->
+          <div id="bench-results-wrap" class="card" style="display: none; border-color: rgba(99, 102, 241, 0.4);">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 20px;">
+              <div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-600);">Benchmark Execution Report</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted);" id="bench-res-strategy">Strategy</p>
+              </div>
+              <span class="status-pill active" style="font-size: 0.85rem;">Completed Successfully</span>
+            </div>
+
+            <div class="stats-grid" style="margin-bottom: 24px;">
+              <div class="card stat-card card-subtle-box">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="bench-res-throughput">0</div>
+                  <p>Throughput (IDs/sec)</p>
+                </div>
+              </div>
+
+              <div class="card stat-card card-subtle-box">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="bench-res-collisions" style="color: var(--success);">0</div>
+                  <p>Collision Count</p>
+                </div>
+              </div>
+
+              <div class="card stat-card card-subtle-box">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="bench-res-duration" style="color: #D97706;">0 ms</div>
+                  <p>Execution Latency</p>
+                </div>
+              </div>
+
+              <div class="card stat-card card-subtle-box">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="bench-res-total" style="color: var(--primary-600);">0</div>
+                  <p>Total Generated</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px;">Sample Generated IDs from Set:</h4>
+              <div id="bench-sample-ids" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 6: LOGIN ================= -->
+        <section id="view-login" class="view-section">
+          <div style="max-width: 440px; margin: 40px auto;">
+            <div class="card">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 36px; margin-bottom: 8px;">🔐</div>
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Sign In to Library</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Enter your credentials to access loans and reservations.</p>
+              </div>
+
+              <form onsubmit="event.preventDefault(); Auth.login(document.getElementById('login-email').value, document.getElementById('login-password').value);">
+                <div class="form-group">
+                  <label>Email Address</label>
+                  <input type="email" class="form-control" id="login-email" required placeholder="name@domain.com">
+                </div>
+
+                <div class="form-group">
+                  <label>Password</label>
+                  <input type="password" class="form-control" id="login-password" required placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+                  Sign In
+                </button>
+              </form>
+
+              <div style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">
+                Don't have an account? <a href="#" onclick="event.preventDefault(); Router.navigate('register');" style="color: var(--primary-600); font-weight: 600;">Register here</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 7: REGISTRATION ================= -->
+        <section id="view-register" class="view-section">
+          <div style="max-width: 480px; margin: 40px auto;">
+            <div class="card">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 36px; margin-bottom: 8px;">📝</div>
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Member Registration</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Join the library to borrow books and manage reservations.</p>
+              </div>
+
+              <form onsubmit="event.preventDefault(); Auth.register(
+                document.getElementById('reg-name').value,
+                document.getElementById('reg-email').value,
+                document.getElementById('reg-password').value,
+                document.getElementById('reg-phone').value,
+                document.getElementById('reg-role').value
+              );">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" class="form-control" id="reg-name" required placeholder="John Doe">
+                </div>
+
+                <div class="form-group">
+                  <label>Email Address</label>
+                  <input type="email" class="form-control" id="reg-email" required placeholder="john@example.com">
+                </div>
+
+                <div class="form-group">
+                  <label>Password (min 6 characters)</label>
+                  <input type="password" class="form-control" id="reg-password" required minlength="6" placeholder="••••••••">
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" class="form-control" id="reg-phone" placeholder="+1-555-0199">
+                  </div>
+                  <div class="form-group">
+                    <label>Account Role</label>
+                    <select class="form-control" id="reg-role">
+                      <option value="MEMBER">Member</option>
+                      <option value="ADMIN">Administrator</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+                  Complete Registration
+                </button>
+              </form>
+
+              <div style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">
+                Already have an account? <a href="#" onclick="event.preventDefault(); Router.navigate('login');" style="color: var(--primary-600); font-weight: 600;">Sign In</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: BOOK DISCOVERY ================= -->
+        <section id="view-discovery" class="view-section">
+          <div style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Book Discovery & Redis Cache Engine</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                  In-Memory Prefix Search, Redis Cache-Aside Engine & High-Throughput Catalogue Crawler.
+                </p>
+              </div>
+              <div id="stat-redis-status" class="status-pill active">🟢 CONNECTED</div>
+            </div>
+          </div>
+
+          <!-- Redis Telemetry Cards -->
+          <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 28px;">
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="stat-book-hits" style="color: var(--success); font-size: 1.4rem;">0</div>
+                <p>Book Cache Hits</p>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="stat-book-misses" style="color: #D97706; font-size: 1.4rem;">0</div>
+                <p>Book Cache Misses</p>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="stat-search-hits" style="color: var(--success); font-size: 1.4rem;">0</div>
+                <p>Search Cache Hits</p>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="stat-search-misses" style="color: #D97706; font-size: 1.4rem;">0</div>
+                <p>Search Cache Misses</p>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="stat-cache-ratio" style="color: var(--primary-600); font-size: 1.4rem;">0.00%</div>
+                <p>Overall Hit Ratio</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;" class="discovery-grid">
+            <!-- Trie Autocomplete Tester -->
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 1.1rem; font-weight: 700;">⚡ Trie Autocomplete Playground</h3>
+                <span id="discovery-trie-latency" style="font-size: 0.8rem; color: var(--text-muted);"></span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Type any prefix to fetch instantaneous suggestions from the in-memory Trie data structure:
+              </p>
+              <div class="form-group">
+                <input type="text" class="form-control" id="discovery-trie-input" placeholder="Type prefix (e.g. 'clean', 'sys', 'data', 'martin')...">
+              </div>
+              <div id="discovery-trie-results" class="card-subtle-box" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; padding: 12px; border-radius: var(--radius-md);">
+                <span style="color: var(--text-dim); font-size: 0.85rem;">Type a prefix above to test Trie prefix matching...</span>
+              </div>
+            </div>
+
+            <!-- Redis Multi-Field Search Explorer -->
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 1.1rem; font-weight: 700;">🔍 Cache-Aside Search Explorer</h3>
+                <span id="discovery-cache-badge" class="badge-concept badge-redis" style="font-size: 0.75rem;">REDIS READY</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Queries check Redis first (<code>search:{query}:{page}:{size}:{avail}</code>). Cache hit returns in &lt;2ms; miss queries MongoDB and caches with TTL.
+              </p>
+              <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <input type="text" class="form-control" id="discovery-search-q" placeholder="Search term..." style="flex: 2;">
+                <select class="form-control" id="discovery-search-avail" style="flex: 1;">
+                  <option value="">All Stock</option>
+                  <option value="true">In Stock</option>
+                  <option value="false">Out of Stock</option>
+                </select>
+                <button class="btn btn-primary" onclick="Discovery.runSearch()">Search</button>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px;">
+                Execution Latency: <strong id="discovery-search-latency" style="color: var(--primary-600);">0 ms</strong>
+              </div>
+              <div id="discovery-search-results" style="max-height: 280px; overflow-y: auto;">
+                <div style="text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.85rem;">
+                  Click 'Search' or pick a Trie suggestion above to execute cached search.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controlled Crawler Panel -->
+          <div class="card">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">🕷️ Automated Catalogue Discovery Crawler</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+              Crawls permitted catalogue sources, extracts book metadata, deduplicates URLs, and stages records for catalogue ingestion:
+            </p>
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+              <input type="text" class="form-control" id="crawler-seed-url" value="http://localhost:8081/api/crawler/simulated-source?page=1" style="flex: 1; min-width: 260px;">
+              <button class="btn btn-primary" onclick="Discovery.runCrawler()">🚀 Run Controlled Crawl</button>
+            </div>
+            <div id="crawler-stats-container" style="display: none; margin-bottom: 16px;"></div>
+            <div id="crawler-extracted-books"></div>
+          </div>
+        </section>
+
+        <!-- ================= VIEW: DISTRIBUTED STORAGE & SHARDING ================= -->
+        <section id="view-distribution" class="view-section">
+          <div style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Distributed Storage & Partition Routing</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                  Consistent Hashing Partition Ring & Distributed Cluster Topology Manager.
+                </p>
+              </div>
+              <div id="dist-cluster-badge" class="status-pill active">CLUSTER READY</div>
+            </div>
+          </div>
+
+          <!-- Top Status Grid -->
+          <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 28px;">
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="dist-node-count" style="font-size: 1.5rem; color: var(--primary-600);">4</div>
+                <p>Logical Storage Nodes</p>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="dist-vnode-count" style="font-size: 1.5rem; color: #D97706;">150</div>
+                <p>VNodes per Physical Node</p>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="dist-total-vnodes" style="font-size: 1.5rem; color: var(--primary-500);">600</div>
+                <p>Total Virtual Points on Ring</p>
+              </div>
+            </div>
+            <div class="card stat-card">
+              <div class="stat-content">
+                <div class="metric-highlight" id="dist-cv" style="font-size: 1.5rem; color: var(--success);">&lt; 8%</div>
+                <p>Ring Variance (Coeff. Var)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- MongoDB Sharding Architecture Panel -->
+          <div class="card" style="margin-bottom: 28px; border-color: rgba(99, 102, 241, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-600); display: flex; align-items: center; gap: 8px;">
+                  <span>🍃</span> MongoDB Sharded Deployment Architecture
+                </h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">
+                  Deployment Mode: <strong id="dist-cluster-type" style="color: var(--text-main);">STANDALONE_DEV</strong> | URI: <code id="dist-conn-uri" style="color: var(--primary-600);">mongodb://localhost:27017/library_db</code>
+                </p>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="Distribution.loadOverview()">🔄 Refresh Status</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 20px;" class="distribution-shards-grid">
+              <!-- Shard Replica Sets -->
+              <div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">
+                  Active / Configured Shard Replica Sets:
+                </div>
+                <div id="dist-shards-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
+              </div>
+
+              <!-- Shard Keys & Docker Quickstart -->
+              <div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">
+                  Hashed Shard Keys & Distribution:
+                </div>
+                <div id="dist-shard-keys-list"></div>
+                <div class="card-subtle-box" style="margin-top: 12px; padding: 10px; border-radius: var(--radius-sm); font-size: 0.75rem;">
+                  <span style="color: var(--text-dim);">To spin up 2-shard + configsvr cluster:</span><br>
+                  <code style="color: var(--primary-600); font-weight: 700;">docker compose -f docker-compose-sharding.yml up -d</code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Consistent Hash Ring Active Nodes & Key Allocation -->
+          <div class="card" style="margin-bottom: 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main);">🌐 Consistent Hash Ring Topology & Key Allocation</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">
+                  Algorithm: <strong id="dist-algo">32-bit MurmurHash3</strong> | Live Catalogue & Member Records: <strong id="dist-total-keys" style="color: var(--primary-600);">0</strong> keys
+                </p>
+              </div>
+              <!-- Add Node Form -->
+              <div style="display: flex; gap: 8px;">
+                <input type="text" class="form-control" id="dist-new-node-input" placeholder="New node (e.g. storage-node-5)" style="width: 220px; font-size: 0.85rem;">
+                <button class="btn btn-primary btn-sm" onclick="Distribution.addNode()">+ Add Node</button>
+              </div>
+            </div>
+
+            <!-- Nodes Cards Grid -->
+            <div id="dist-nodes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;"></div>
+          </div>
+
+          <!-- Interactive Key Routing & Scale Simulator -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;" class="distribution-sim-grid">
+            <!-- Key Route Inspector -->
+            <div class="card">
+              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">🎯 Single Key Routing Inspector</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
+                Trace how any book ID, ISBN, or member identifier maps onto the 32-bit circular hash ring:
+              </p>
+              <div class="form-group">
+                <input type="text" class="form-control" id="dist-route-input" placeholder="Type key (e.g. BK-RQwX87z9s2, 978-0132350884, MEM-001)...">
+              </div>
+              <div id="dist-route-result">
+                <div class="card-subtle-box" style="padding: 14px; border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-dim); text-align: center;">
+                  Enter a key above to trace its MurmurHash3 value and target partition node.
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Scale & Rebalance Simulation -->
+            <div class="card">
+              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">📈 Scale Demonstration & Remapping Simulator</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
+                Simulate adding or removing a storage node. Demonstrates that only ~1/(N+1) keys move, proving ring stability:
+              </p>
+              <div class="form-row" style="margin-bottom: 12px;">
+                <div class="form-group" style="flex: 2;">
+                  <label style="font-size: 0.75rem;">Node Identifier</label>
+                  <input type="text" class="form-control" id="dist-sim-node-input" value="storage-node-scale-demo">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label style="font-size: 0.75rem;">Operation</label>
+                  <select class="form-control" id="dist-sim-op-select">
+                    <option value="ADD">Add Node (+)</option>
+                    <option value="REMOVE">Remove Node (-)</option>
+                  </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label style="font-size: 0.75rem;">Test Keys</label>
+                  <input type="number" class="form-control" id="dist-sim-keys-input" value="2000" min="100" max="20000" step="500">
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-primary btn-sm" style="flex: 2;" onclick="Distribution.runRebalanceSimulation()">
+                  🚀 Run Rebalance Simulation
+                </button>
+                <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Distribution.runUniformityBenchmark()">
+                  ⚡ 10k Benchmark
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Simulation / Benchmark Output Container -->
+          <div id="dist-rebalance-result" class="card" style="display: none; margin-bottom: 28px;"></div>
+          <div id="dist-bench-report" class="card" style="display: none; margin-bottom: 28px;"></div>
+
+          <!-- Cooperation Architecture Card -->
+          <div class="card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(6, 182, 212, 0.04)); border-color: rgba(99, 102, 241, 0.25);">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--primary-600);">
+              🤝 Application Router & MongoDB Storage Architecture
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.85rem; line-height: 1.6; margin-bottom: 16px;">
+              <div class="card-subtle-box" style="padding: 14px; border-radius: var(--radius-md);">
+                <div style="font-weight: 700; color: var(--primary-600); margin-bottom: 6px;">Layer 7: Application Consistent Hashing Router</div>
+                <p id="dist-coop-app" style="color: var(--text-muted);">
+                  Routes catalogue cache keys, read requests, and microservice tasks across logical nodes with minimal key churn upon scaling.
+                </p>
+              </div>
+              <div class="card-subtle-box" style="padding: 14px; border-radius: var(--radius-md);">
+                <div style="font-weight: 700; color: #D97706; margin-bottom: 6px;">Layer 4: MongoDB Database Sharding (mongos)</div>
+                <p id="dist-coop-db" style="color: var(--text-muted);">
+                  Mongos router distributes BSON records across replica set shards based on hashed shard keys { bookId: 'hashed' } and { memberId: 'hashed' }.
+                </p>
+              </div>
+            </div>
+            <div class="card-subtle-box" style="font-size: 0.82rem; color: var(--text-main); padding: 12px; border-radius: var(--radius-sm);">
+              <strong>Synergy:</strong> <span id="dist-coop-synergy">Application consistent hashing ensures predictable cache locality and low latency; MongoDB sharding provides horizontal persistence capacity, high availability, and transparent chunk rebalancing.</span>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+  
+  <!-- Book Detail Modal -->
+  <div class="modal-overlay" id="book-detail-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Book Details & Actions</h3>
+        <button class="btn-close-modal" onclick="App.closeAllModals()">&times;</button>
+      </div>
+      <div class="modal-body" id="book-detail-modal-content"></div>
+    </div>
+  </div>
+
+  <!-- Admin Book Form Modal (Add / Edit) -->
+  <div class="modal-overlay" id="book-form-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="book-form-title">Add New Book</h3>
+        <button class="btn-close-modal" onclick="App.closeAllModals()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="book-form" onsubmit="Admin.handleSaveBook(event)">
+          <input type="hidden" id="book-form-id">
+
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" class="form-control" id="book-form-title-input" required placeholder="Designing Data-Intensive Applications">
+          </div>
+
+          <div class="form-group">
+            <label>Author(s) (comma separated)</label>
+            <input type="text" class="form-control" id="book-form-authors" required placeholder="Martin Kleppmann">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>ISBN</label>
+              <input type="text" class="form-control" id="book-form-isbn" required placeholder="978-1449373320">
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <input type="text" class="form-control" id="book-form-category" required placeholder="System Architecture">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Total Copies</label>
+              <input type="number" class="form-control" id="book-form-total" required min="1" value="3">
+            </div>
+            <div class="form-group" style="display: none;">
+              <label>Available Copies</label>
+              <input type="number" class="form-control" id="book-form-available" min="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Location / Shelf</label>
+            <input type="text" class="form-control" id="book-form-location" placeholder="Shelf A-102">
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" id="book-form-desc" rows="3" placeholder="Book synopsis and contents overview..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Save Book Record</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pay Fine Modal (Simulated Payment) -->
+  <div class="modal-overlay" id="pay-fine-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Simulated Payment</h3>
+        <button class="btn-close-modal" onclick="App.closeAllModals()">&times;</button>
+      </div>
+      <div class="modal-body" id="pay-fine-modal-content"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/books.js"></script>
+  <script src="js/member.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/benchmark.js"></script>
+  <script src="js/discovery.js"></script>
+  <script src="js/distribution.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

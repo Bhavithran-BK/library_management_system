@@ -1,0 +1,422 @@
+{
+  "info": {
+    "_postman_id": "c1f7b8a9-4d2e-4b6a-9812-79b4978b2a24",
+    "name": "Library Management System - Member 1 APIs",
+    "description": "Comprehensive Postman collection for Member 1's core backend, authentication, book CRUD, borrowing, returns, reservations, fines, unique ID generator benchmark, and integration stubs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "memberId",
+      "value": "MEM-ALICE01",
+      "type": "string"
+    },
+    {
+      "key": "bookId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "loanId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "fineTxnId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication & Members",
+      "item": [
+        {
+          "name": "Register New Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"David Miller\",\n  \"email\": \"david@example.com\",\n  \"password\": \"David@123\",\n  \"phone\": \"+1-555-0199\",\n  \"role\": \"MEMBER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('token', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@library.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login as Alice (Member)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('token', jsonData.data.token);",
+                  "    pm.collectionVariables.set('memberId', jsonData.data.memberId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"Alice@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current Profile (/api/auth/me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Book Management",
+      "item": [
+        {
+          "name": "List Books (Paginated & Filterable)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books?category=ALL&page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "books"],
+              "query": [
+                { "key": "category", "value": "ALL" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Book (Admin only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Cloud Native Patterns\",\n  \"authors\": [\"Cornelia Davis\"],\n  \"isbn\": \"978-1617294297\",\n  \"category\": \"Cloud Computing\",\n  \"totalCopies\": 3,\n  \"location\": \"Shelf E-402\",\n  \"description\": \"Designing resilient cloud architectures that survive node churn.\",\n  \"metadataSource\": \"INTERNAL\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/books",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "books"]
+            }
+          }
+        },
+        {
+          "name": "Get Book by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/books/{{bookId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "books", "{{bookId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Borrowing & Returns",
+      "item": [
+        {
+          "name": "Borrow Book (POST /api/loans)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": \"{{memberId}}\",\n  \"bookId\": \"{{bookId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/loans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "loans"]
+            }
+          }
+        },
+        {
+          "name": "Return Book (POST /api/loans/{id}/return)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/loans/{{loanId}}/return",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "loans", "{{loanId}}", "return"]
+            }
+          }
+        },
+        {
+          "name": "List Active Loans",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/loans/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "loans", "active"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Reservations",
+      "item": [
+        {
+          "name": "Create Reservation (POST /api/reservations)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"memberId\": \"{{memberId}}\",\n  \"bookId\": \"{{bookId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reservations"]
+            }
+          }
+        },
+        {
+          "name": "Get Member Reservations",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/reservations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "members", "{{memberId}}", "reservations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Fines & Simulated Payments",
+      "item": [
+        {
+          "name": "Get Member Fines",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/members/{{memberId}}/fines",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "members", "{{memberId}}", "fines"]
+            }
+          }
+        },
+        {
+          "name": "Pay Fine (Simulated Payment)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 30.00,\n  \"paymentMethod\": \"SIMULATED_CARD\",\n  \"idempotencyKey\": \"TEST-IDEMP-001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/fines/{{fineTxnId}}/pay",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "fines", "{{fineTxnId}}", "pay"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Unique ID Generator (System Design Concept)",
+      "item": [
+        {
+          "name": "Run Concurrency Benchmark",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"count\": 10000,\n  \"threads\": 8,\n  \"strategy\": \"snowflake\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/id-generator/benchmark",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "id-generator", "benchmark"]
+            }
+          }
+        },
+        {
+          "name": "Get Sample Generated IDs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/id-generator/sample",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "id-generator", "sample"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Dashboard Stats & Integration Stubs",
+      "item": [
+        {
+          "name": "Dashboard Summary (/api/stats/dashboard)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/stats/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "stats", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Member 2 Search Stub (/api/search)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/search?q=Data",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "search"],
+              "query": [{ "key": "q", "value": "Data" }]
+            }
+          }
+        },
+        {
+          "name": "Member 3 Distribution Stub (/api/admin/distribution)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/distribution",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "distribution"]
+            }
+          }
+        },
+        {
+          "name": "Member 4 Short Link Stub (/api/short-links)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetPath\": \"/#books?id=BK-101\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/short-links",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "short-links"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
