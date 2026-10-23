@@ -30,6 +30,8 @@ const Router = {
       Discovery.init();
     } else if (viewName === 'distribution') {
       Distribution.init();
+    } else if (viewName === 'shortlinks') {
+      ShortLinksUI.init();
     }
 
     // If navbar is not pinned, auto-hide after navigation

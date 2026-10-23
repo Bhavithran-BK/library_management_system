@@ -1,0 +1,234 @@
+{
+  "info": {
+    "_postman_id": "member4-evaluation-stress-suite-2026",
+    "name": "Library Management System - Member 4 Evaluation & Stress Tests",
+    "description": "Comprehensive performance, stress, and rate-limiting test suite evaluating Member 1 (Data & Concurrency), Member 2 (Cache-Aside & Trie), Member 3 (Consistent Hash Ring), and Member 4 (Distributed Rate Limiting & Base62 URL Shortener).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8081", "type": "string" },
+    { "key": "shortCode", "value": "q0X", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Setup & ShortLink Seeding",
+      "item": [
+        {
+          "name": "Reset Rate Limiter",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/admin/rate-limit/reset", "host": ["{{baseUrl}}"], "path": ["api", "admin", "rate-limit", "reset"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Rate limiter reset succeeded', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Evaluation Short Link",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUrl\": \"http://localhost:8081/#catalogue?id=BK-EVAL-42\",\n  \"bookId\": \"BK-EVAL-42\",\n  \"title\": \"Distributed Systems Principles & Evaluation\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/short-links", "host": ["{{baseUrl}}"], "path": ["api", "short-links"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Short link created or retrieved', function() {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.data.code).to.not.be.empty;",
+                  "    pm.collectionVariables.set('shortCode', json.data.code);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scenario 1: Low Load (Baseline - 100 requests)",
+      "description": "Target Endpoints: GET /api/search?q=clean, GET /s/{code}. Concurrency: 10 threads, 100 total requests. Expected: p95 latency < 15ms, 100% cache hits after warm-up, 0 errors.",
+      "item": [
+        {
+          "name": "Cached Search Query",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/search?q=clean", "host": ["{{baseUrl}}"], "path": ["api", "search"], "query": [{ "key": "q", "value": "clean" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response time is sub-15ms for cached response', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(50);",
+                  "});",
+                  "pm.test('Has X-RateLimit-Limit header', function () {",
+                  "    pm.expect(pm.response.headers.get('X-RateLimit-Limit')).to.eql('100');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resolve Base62 Short Link (HTTP 302)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/s/{{shortCode}}", "host": ["{{baseUrl}}"], "path": ["s", "{{shortCode}}"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 302 Found or 200 followed', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 302]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scenario 2: Medium Load (Sustained - 1,000 requests)",
+      "description": "Target Endpoints: GET /api/search/suggest?prefix=cle, GET /api/books, POST /api/short-links. Concurrency: 50 threads, 1,000 requests. Expected: Trie autocomplete < 5ms, Redis hit ratio > 80%, zero 500 errors.",
+      "item": [
+        {
+          "name": "Trie Prefix Autocomplete",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/search/suggest?prefix=cle&limit=5", "host": ["{{baseUrl}}"], "path": ["api", "search", "suggest"], "query": [{ "key": "prefix", "value": "cle" }, { "key": "limit", "value": "5" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Trie latency is under 10ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(30);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Browse Books Catalogue",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/books?page=0&size=10", "host": ["{{baseUrl}}"], "path": ["api", "books"], "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "10" }] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Includes RateLimit Remaining header', function () {",
+                  "    pm.expect(pm.response.headers.has('X-RateLimit-Remaining')).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scenario 3: High Load (Rate Limit Stress - 3,000 requests in bursts)",
+      "description": "Target Endpoints: GET /api/books, POST /api/admin/rate-limit/simulate. Concurrency: 150 threads, 3,000 burst requests. Expected: First 100 requests succeed (HTTP 200); subsequent requests return HTTP 429 Too Many Requests; DB connections remain healthy with 0 crashes.",
+      "item": [
+        {
+          "name": "Simulate Burst Throttling (150 requests)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/rate-limit/simulate?count=150&clientIdentifier=stress-client-scenario-3",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "rate-limit", "simulate"],
+              "query": [
+                { "key": "count", "value": "150" },
+                { "key": "clientIdentifier", "value": "stress-client-scenario-3" }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Simulation executed cleanly', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.data.burstSize).to.eql(150);",
+                  "    pm.expect(json.data.allowedCount).to.be.at.least(100);",
+                  "    pm.expect(json.data.rejectedCount).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verify Rate Limiter Live Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/admin/rate-limit/stats", "host": ["{{baseUrl}}"], "path": ["api", "admin", "rate-limit", "stats"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Rate limiter metrics active', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.data.status).to.eql('ACTIVE');",
+                  "    pm.expect(json.data.bucketCapacity).to.eql(100);",
+                  "    pm.expect(json.data.totalRequests).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

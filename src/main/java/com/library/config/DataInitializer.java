@@ -26,6 +26,8 @@ public class DataInitializer implements CommandLineRunner {
     private final FineTransactionRepository fineRepository;
     private final PasswordEncoder passwordEncoder;
     private final IdGeneratorService idGeneratorService;
+    private final ShortLinkRepository shortLinkRepository;
+    private final com.library.service.ShortLinkService shortLinkService;
 
     public DataInitializer(MemberRepository memberRepository,
                            BookRepository bookRepository,
@@ -33,7 +35,9 @@ public class DataInitializer implements CommandLineRunner {
                            ReservationRepository reservationRepository,
                            FineTransactionRepository fineRepository,
                            PasswordEncoder passwordEncoder,
-                           IdGeneratorService idGeneratorService) {
+                           IdGeneratorService idGeneratorService,
+                           ShortLinkRepository shortLinkRepository,
+                           com.library.service.ShortLinkService shortLinkService) {
         this.memberRepository = memberRepository;
         this.bookRepository = bookRepository;
         this.loanRepository = loanRepository;
@@ -41,6 +45,8 @@ public class DataInitializer implements CommandLineRunner {
         this.fineRepository = fineRepository;
         this.passwordEncoder = passwordEncoder;
         this.idGeneratorService = idGeneratorService;
+        this.shortLinkRepository = shortLinkRepository;
+        this.shortLinkService = shortLinkService;
     }
 
     @Override
@@ -48,6 +54,7 @@ public class DataInitializer implements CommandLineRunner {
         seedMembers();
         seedBooks();
         seedLoansAndFines();
+        seedShortLinks();
     }
 
     private void seedMembers() {
@@ -238,6 +245,24 @@ public class DataInitializer implements CommandLineRunner {
             Reservation res = new Reservation(resId, "MEM-BOB01", bookUnavailable.getBookId(), 1);
             reservationRepository.save(res);
             log.info("Seeded sample reservation #1 for Bob on unavailable book");
+        }
+    }
+
+    private void seedShortLinks() {
+        if (shortLinkRepository.count() == 0) {
+            try {
+                com.library.dto.CreateShortLinkRequest req1 = new com.library.dto.CreateShortLinkRequest("/#catalogue?id=BK-100", "BK-100");
+                req1.setTitle("Designing Data-Intensive Applications");
+                shortLinkService.createShortLink(req1);
+
+                com.library.dto.CreateShortLinkRequest req2 = new com.library.dto.CreateShortLinkRequest("/#catalogue?id=BK-101", "BK-101");
+                req2.setTitle("Clean Architecture: Craftsman's Guide");
+                shortLinkService.createShortLink(req2);
+
+                log.info("Seeded initial demonstration short links (Member 4)");
+            } catch (Exception ex) {
+                log.warn("Failed to seed initial short links: {}", ex.getMessage());
+            }
         }
     }
 }

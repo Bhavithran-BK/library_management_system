@@ -1217,7 +1217,9 @@ body.nav-is-pinned .main-wrapper {
   .benchmark-grid,
   .discovery-grid,
   .distribution-shards-grid,
-  .distribution-sim-grid {
+  .distribution-sim-grid,
+  .member4-grid,
+  .eval-scenarios-grid {
     grid-template-columns: 1fr !important;
   }
   .main-wrapper {

@@ -312,13 +312,44 @@ Follow this step-by-step sequence during project evaluation:
 
 ---
 
-## 12. Member 4 Integration & Evaluation Guide
+## 12. Member 4: Rate Limiting, URL Shortener & Evaluation (COMPLETE)
 
-Member 4's implementation instructions, architecture specs, and test plans are detailed in:
-👉 **MEMBER_4_INSTRUCTIONS.md**
+Member 4 has completed the implementation and integration of the distributed rate limiter, Base62 URL shortener, and comprehensive system evaluation test plans:
 
-### Pre-Wired Integration Endpoints for Member 4:
-- POST /api/short-links — Generate Base62 short links
-- GET /s/{code} — Resolve and redirect short link
-- GET /api/admin/rate-limit/stats — Token bucket rate limiter diagnostics
-- Stub Controller: com.library.controller.stubs.Member4ShortLinkStubController (whitelisted in SecurityConfig).
+### 12.1 Distributed Token Bucket Rate Limiter
+- **Algorithm:** Atomic Token Bucket implemented via Redis Lua script (`src/main/resources/scripts/rate_limiter.lua`).
+- **Capacity ($C$):** 100 tokens (configurable via `app.rate-limit.capacity`).
+- **Refill Rate ($r$):** 10 tokens / sec (configurable via `app.rate-limit.refill-rate-per-sec`).
+- **Client Identity:** Tracks per-user authenticated IDs (`rate:user:{username}`) or client IPs (`rate:ip:{ip}`).
+- **HTTP Headers:** Standard RFC headers:
+  - `X-RateLimit-Limit: 100`
+  - `X-RateLimit-Remaining: <remaining>`
+  - `Retry-After: <seconds>` (on HTTP 429)
+- **High-Availability Resilience:** Local in-memory token bucket fallback automatically activates if Redis experiences network latency or disconnection.
+- **REST Diagnostics:**
+  - `GET /api/admin/rate-limit/stats` — Real-time metrics, active keys, and rejection rates.
+  - `POST /api/admin/rate-limit/reset` — Atomic key flush and counter reset.
+  - `POST /api/admin/rate-limit/simulate` — Dynamic burst traffic testing directly from UI or CLI.
+
+### 12.2 Base62 Book URL Shortener
+- **Algorithm:** 64-bit integer to Base62 alphanumeric conversion (`0-9a-zA-Z`), powered by an atomic Redis counter (`INCR url_shortener:counter`) with cryptographic SHA-256 fallback.
+- **Dual-Tier Persistence:**
+  - **Tier 1 (Redis Cache):** `shortlink:{code} -> targetUrl` with 24-hour TTL for sub-millisecond 302 redirects.
+  - **Tier 2 (MongoDB):** Durable document entity `ShortLink` in `short_links` collection tracking `clickCount`, `createdAt`, and `lastAccessedAt`.
+- **REST Endpoints:**
+  - `POST /api/short-links` — Creates shareable short code for book or catalogue path.
+  - `GET /s/{code}` — Resolves code and returns HTTP 302 Found redirect with asynchronous click analytics recording.
+  - `GET /api/short-links/{code}/analytics` — Detailed click stats and Redis cache status.
+  - `GET /api/short-links` — List all active short links.
+
+### 12.3 System Evaluation & Performance Stress Testing (Workstream 3)
+Automated test plans are provided for both **Apache JMeter** and **Postman Runner**:
+- **Postman Collection:** `postman/Library_Management_System_Member4_Evaluation.postman_collection.json`
+- **JMeter Test Plan:** `jmeter/Member4_System_Evaluation_StressTest.jmx`
+
+| Test Scenario | Concurrency (Threads) | Target Endpoints | Observed / Expected Outcome |
+| :--- | :--- | :--- | :--- |
+| **Scenario 1: Low Load (Baseline)** | 10 concurrent threads, 100 requests | `GET /api/search?q=clean`, `GET /s/{code}` | p95 latency < 15ms, 100% cache hits after warm-up, 0 errors. |
+| **Scenario 2: Medium Load (Sustained)** | 50 concurrent threads, 1,000 requests | `GET /api/search/suggest?prefix=cle`, `GET /api/books`, `POST /api/short-links` | Trie autocomplete latency < 5ms, Redis hit ratio > 80%, zero 500 errors. |
+| **Scenario 3: High Load (Rate Limit Stress)** | 150 concurrent threads, 3,000 burst requests | `GET /api/search?q=clean`, `POST /api/loans`, `POST /api/admin/rate-limit/simulate` | First 100 requests succeed (HTTP 200); subsequent requests return HTTP 429 Too Many Requests; DB connections remain healthy with 0 crashes. |
+
