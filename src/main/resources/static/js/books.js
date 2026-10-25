@@ -98,7 +98,7 @@ const Books = {
       const safeId = (book.bookId || '').replace(/'/g, "\\'");
 
       return `
-        <article class="book-card" tabindex="0" role="button" aria-label="View details for ${BookCovers.escapeHtml(book.title)}" onclick="Books.openBookModal('${safeId}')" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); Books.openBookModal('${safeId}'); }">
+        <article class="book-card" tabindex="0" role="button" aria-label="View details for ${BookCovers.escapeHtml(book.title)}" onclick="Books.openBookPage('${safeId}')" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); Books.openBookPage('${safeId}'); }">
           <div class="book-cover-wrap">
             ${coverHtml}
           </div>
@@ -224,6 +224,12 @@ const Books = {
     const dropdown = document.getElementById('catalogue-suggest-dropdown');
     if (dropdown) dropdown.style.display = 'none';
     this.handleSearch(term);
+  },
+
+  openBookPage(bookId) {
+    if (bookId) {
+      window.location.href = `/book.html?id=${encodeURIComponent(bookId)}`;
+    }
   },
 
   async openBookModal(bookId) {
@@ -379,8 +385,8 @@ const Books = {
 
   async shareBook(bookId, title) {
     try {
-      const targetPath = `/#catalogue?id=${bookId}`;
-      const res = await API.post('/api/short-links', { targetPath, title });
+      const targetUrl = `/book.html?id=${encodeURIComponent(bookId)}`;
+      const res = await API.post('/api/short-links', { targetUrl, bookId, title });
       const shareResult = document.getElementById('book-share-result');
       if (shareResult && res && res.success) {
         const fullShortUrl = window.location.origin + res.data.shortUrl;

@@ -283,6 +283,20 @@ public class ConsistentHashRouter {
         );
     }
 
+    public List<com.library.dto.RingPointDto> getRingPoints() {
+        List<com.library.dto.RingPointDto> points = new ArrayList<>(ring.size());
+        for (Map.Entry<Long, VirtualNode> entry : ring.entrySet()) {
+            double percent = (entry.getKey() / 4294967295.0) * 100.0;
+            points.add(new com.library.dto.RingPointDto(
+                    entry.getValue().physicalNode(),
+                    entry.getValue().nodeName(),
+                    entry.getKey(),
+                    Math.round(percent * 100.0) / 100.0
+            ));
+        }
+        return points;
+    }
+
     public ConsistentHashRouter copy() {
         ConsistentHashRouter copy = new ConsistentHashRouter(this.virtualNodesPerNode);
         for (String node : this.physicalNodes) {

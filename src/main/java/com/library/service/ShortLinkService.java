@@ -115,7 +115,7 @@ public class ShortLinkService {
             if (cachedUrl != null && !cachedUrl.isBlank()) {
                 log.debug("SHORTLINK CACHE HIT: code={} -> {}", code, cachedUrl);
                 recordAccessAsync(code);
-                return cachedUrl;
+                return normalizeTargetUrl(cachedUrl);
             }
         } catch (Exception ex) {
             log.warn("Redis error resolving shortlink {}: {}", code, ex.getMessage());
@@ -126,12 +126,27 @@ public class ShortLinkService {
         if (entityOpt.isPresent()) {
             ShortLink link = entityOpt.get();
             log.info("SHORTLINK CACHE MISS (Found in Mongo): code={} -> {}", code, link.getOriginalUrl());
-            cacheInRedis(code, link.getOriginalUrl());
+            String targetUrl = normalizeTargetUrl(link.getOriginalUrl());
+            cacheInRedis(code, targetUrl);
             recordAccessAsync(code);
-            return link.getOriginalUrl();
+            return targetUrl;
         }
 
         throw new ResourceNotFoundException("Short link not found for code: " + code);
+    }
+
+    private String normalizeTargetUrl(String url) {
+        if (url != null && url.contains("catalogue?id=")) {
+            String id = url.substring(url.indexOf("catalogue?id=") + "catalogue?id=".length());
+            int amp = id.indexOf('&');
+            if (amp != -1) id = id.substring(0, amp);
+            int hash = id.indexOf('#');
+            if (hash != -1) id = id.substring(0, hash);
+            if (!id.isBlank()) {
+                return "/book.html?id=" + id.trim();
+            }
+        }
+        return url != null && !url.isBlank() ? url : "/";
     }
 
     /**

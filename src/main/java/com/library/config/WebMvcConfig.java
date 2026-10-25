@@ -30,6 +30,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/error",                   // Error dispatcher
                         "/",                        // Static home
                         "/index.html",
+                        "/book.html",
                         "/simulation.html",
                         "/css/**",
                         "/js/**",

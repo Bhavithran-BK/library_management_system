@@ -89,6 +89,19 @@ const App = {
       if (e.key === 'Escape') this.closeAllModals();
     });
 
+    // Check if URL has book ID parameter in hash (legacy catalogue links)
+    const hash = window.location.hash || '';
+    if (hash.includes('?id=')) {
+      const parts = hash.split('?id=');
+      if (parts[1]) {
+        const bookId = parts[1].split('&')[0];
+        if (bookId) {
+          window.location.replace(`/book.html?id=${encodeURIComponent(bookId)}`);
+          return;
+        }
+      }
+    }
+
     this.setDashboardGreeting();
     Router.navigate('catalogue');
   },
@@ -206,7 +219,7 @@ const App = {
         const coverHtml = BookCovers.coverMarkup(book.isbn, book.title, authors, 'M');
         const safeId = (book.bookId || '').replace(/'/g, "\\'");
         return `
-          <div class="recent-book-row" role="button" tabindex="0" onclick="Books.openBookModal('${safeId}')" onkeydown="if(event.key==='Enter')Books.openBookModal('${safeId}')">
+          <div class="recent-book-row" role="button" tabindex="0" onclick="Books.openBookPage('${safeId}')" onkeydown="if(event.key==='Enter')Books.openBookPage('${safeId}')">
             <div class="recent-book-thumb">${coverHtml}</div>
             <div class="recent-book-meta">
               <h4>${BookCovers.escapeHtml(book.title)}</h4>

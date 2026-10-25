@@ -65,6 +65,14 @@ public class DistributionController {
     }
 
     /**
+     * Retrieves all virtual node coordinates on the consistent hash ring for real-time visualization.
+     */
+    @GetMapping("/ring-points")
+    public ResponseEntity<ApiResponse<java.util.List<RingPointDto>>> getRingPoints() {
+        return ResponseEntity.ok(ApiResponse.success("Ring points retrieved", distributionService.getRingPoints()));
+    }
+
+    /**
      * Simulates dynamic node addition/removal and measures keys migrated against theoretical expectation.
      */
     @PostMapping("/rebalance-simulation")

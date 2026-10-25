@@ -100,6 +100,10 @@ public class DistributionService {
         );
     }
 
+    public List<com.library.dto.RingPointDto> getRingPoints() {
+        return router.getRingPoints();
+    }
+
     public DistributionOverviewDto getDistributionOverview() {
         // 1. Consistent Hash Ring Status
         DistributionOverviewDto.ConsistentHashRingStatus ringStatus = new DistributionOverviewDto.ConsistentHashRingStatus(

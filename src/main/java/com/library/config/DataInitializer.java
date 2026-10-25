@@ -251,11 +251,11 @@ public class DataInitializer implements CommandLineRunner {
     private void seedShortLinks() {
         if (shortLinkRepository.count() == 0) {
             try {
-                com.library.dto.CreateShortLinkRequest req1 = new com.library.dto.CreateShortLinkRequest("/#catalogue?id=BK-100", "BK-100");
+                com.library.dto.CreateShortLinkRequest req1 = new com.library.dto.CreateShortLinkRequest("/book.html?id=BK-100", "BK-100");
                 req1.setTitle("Designing Data-Intensive Applications");
                 shortLinkService.createShortLink(req1);
 
-                com.library.dto.CreateShortLinkRequest req2 = new com.library.dto.CreateShortLinkRequest("/#catalogue?id=BK-101", "BK-101");
+                com.library.dto.CreateShortLinkRequest req2 = new com.library.dto.CreateShortLinkRequest("/book.html?id=BK-101", "BK-101");
                 req2.setTitle("Clean Architecture: Craftsman's Guide");
                 shortLinkService.createShortLink(req2);
 

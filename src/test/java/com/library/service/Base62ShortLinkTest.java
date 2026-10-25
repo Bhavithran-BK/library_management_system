@@ -68,7 +68,7 @@ public class Base62ShortLinkTest {
     @DisplayName("Create ShortLink creates MongoDB entity and warms Redis Tier 1 cache")
     public void testCreateShortLinkDualTierPersistence() {
         String testBookId = "BK-TEST-B62-" + System.currentTimeMillis();
-        String targetUrl = "/#catalogue?id=" + testBookId;
+        String targetUrl = "/book.html?id=" + testBookId;
 
         CreateShortLinkRequest req = new CreateShortLinkRequest();
         req.setTargetUrl(targetUrl);
@@ -99,7 +99,7 @@ public class Base62ShortLinkTest {
     @DisplayName("REST Endpoints: POST /api/short-links, GET /s/{code} HTTP 302, and GET analytics")
     public void testShortLinkRestEndpoints() throws Exception {
         String bookId = "BK-REST-" + System.currentTimeMillis();
-        String targetUrl = "/#catalogue?id=" + bookId;
+        String targetUrl = "/book.html?id=" + bookId;
 
         CreateShortLinkRequest req = new CreateShortLinkRequest();
         req.setTargetUrl(targetUrl);
