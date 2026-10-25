@@ -22,6 +22,11 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      box-shadow: var(--shadow-subtle);
     }
     .back-btn {
       display: inline-flex;
@@ -194,40 +199,23 @@
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <!-- Main Top Navigation -->
-    <header class="app-header" style="position: sticky; top: 0; z-index: 50; background: var(--bg-surface); border-bottom: 1px solid var(--border-color);">
-      <div class="header-left" style="display: flex; align-items: center; gap: 16px;">
-        <a href="/index.html" class="sidebar-logo" style="text-decoration: none; color: inherit;" title="Return to Library Catalogue">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            <path d="M9 7h6M9 11h4"/>
-          </svg>
-        </a>
-        <div>
-          <span style="font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700;">Library Management</span>
-          <span class="badge" style="margin-left: 8px; font-size: 0.7rem;">Book Detail Page</span>
-        </div>
-      </div>
-      <div class="header-right" style="display: flex; gap: 10px; align-items: center;">
-        <a href="/index.html" class="btn btn-outline btn-sm">← Main Catalogue</a>
-        <a href="/simulation.html" class="btn btn-outline btn-sm">Simulation & Ring</a>
-        <div id="auth-nav-status"></div>
-      </div>
-    </header>
-
-    <main class="book-page-wrap">
-      <!-- Breadcrumb & Back Button -->
-      <div class="back-nav-bar">
-        <a href="/index.html#catalogue" class="back-btn">
+  <main class="book-page-wrap">
+    <!-- Top Navigation & Breadcrumb Bar -->
+    <nav class="back-nav-bar" aria-label="Book page navigation">
+      <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <a href="/index.html" class="back-btn" title="Return to Catalogue">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          Back to Catalogue Collection
+          Catalogue
         </a>
-        <div style="font-size: 0.85rem; color: var(--text-muted);" id="book-accession-tag">
-          Accession Record
-        </div>
+        <a href="/simulation.html" class="back-btn" style="color: var(--accent);">
+          Simulation & Ring
+        </a>
       </div>
+      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <span style="font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono);" id="book-accession-tag">Accession Record</span>
+        <div id="auth-nav-status" style="display: flex; align-items: center; gap: 8px;"></div>
+      </div>
+    </nav>
 
       <!-- Loading Placeholder -->
       <div id="book-loading-state" class="loading-block" style="background: var(--bg-surface); padding: 60px; border-radius: var(--radius-lg); text-align: center; border: 1px solid var(--border-color);">
@@ -342,7 +330,6 @@
         </div>
       </div>
     </main>
-  </div>
 
   <div id="toast-container" class="toast-container"></div>
 
