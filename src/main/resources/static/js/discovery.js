@@ -43,14 +43,14 @@ const Discovery = {
       const res = await API.get(`/api/search/suggest?prefix=${encodeURIComponent(prefix.trim())}&limit=10`);
       const latency = Math.round(performance.now() - start);
       if (latencyEl) {
-        latencyEl.innerHTML = `⚡ <span style="color: var(--success); font-weight: 700;">${latency} ms</span> response latency`;
+        latencyEl.innerHTML = `<span style="color: var(--accent); font-weight: 600;">${latency} ms</span> latency`;
       }
 
       if (res && res.success && res.data && res.data.suggestions && res.data.suggestions.length > 0) {
         container.innerHTML = res.data.suggestions.map(item => `
-          <div class="chip" style="cursor: pointer; background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3);"
+          <div class="chip" style="cursor: pointer;"
                onclick="Discovery.selectSuggestion('${item.replace(/'/g, "\\'")}')">
-            <span>🔍 ${item}</span>
+            <span>${BookCovers.escapeHtml(item)}</span>
           </div>
         `).join('');
       } else {
@@ -104,17 +104,11 @@ const Discovery = {
 
       if (badgeEl) {
         if (wasHit) {
-          badgeEl.className = 'badge-concept';
-          badgeEl.style.background = 'rgba(16, 185, 129, 0.2)';
-          badgeEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-          badgeEl.style.color = '#10B981';
-          badgeEl.innerHTML = '⚡ FAST CACHE HIT';
+          badgeEl.className = 'status-pill active';
+          badgeEl.innerHTML = '<span class="status-dot"></span> Cache Hit';
         } else {
-          badgeEl.className = 'badge-concept';
-          badgeEl.style.background = 'rgba(245, 158, 11, 0.2)';
-          badgeEl.style.borderColor = 'rgba(245, 158, 11, 0.4)';
-          badgeEl.style.color = '#FBBF24';
-          badgeEl.innerHTML = '📦 DATABASE RETRIEVAL';
+          badgeEl.className = 'status-pill pending';
+          badgeEl.innerHTML = '<span class="status-dot"></span> Database Retrieval';
         }
       }
 
@@ -189,8 +183,8 @@ const Discovery = {
     if (elRatio) elRatio.innerText = data.hitRatio;
     if (elStatus) {
       elStatus.innerHTML = data.connected
-        ? '<span style="color: var(--success); font-weight: 700;">🟢 CONNECTED</span>'
-        : '<span style="color: var(--danger); font-weight: 700;">🔴 DISCONNECTED</span>';
+        ? '<span class="status-pill active"><span class="status-dot"></span> Connected</span>'
+        : '<span class="status-pill overdue"><span class="status-dot"></span> Disconnected</span>';
     }
   },
 
@@ -210,8 +204,8 @@ const Discovery = {
     statusContainer.style.display = 'block';
     statusContainer.innerHTML = `
       <div style="text-align: center; padding: 20px; color: var(--text-muted);">
-        <div class="spinner" style="font-size: 24px; margin-bottom: 8px;">⏳</div>
-        Crawling pages safely and parsing HTML book records...
+        <div class="loading-spinner"></div>
+        Crawling pages and extracting catalogue metadata…
       </div>
     `;
     resultsContainer.innerHTML = '';
@@ -223,12 +217,12 @@ const Discovery = {
         this.lastExtractedBooks = d.extractedBooks || [];
 
         statusContainer.innerHTML = `
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; background: var(--bg-card-subtle); border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); font-size: 0.85rem;">
-            <div><span style="color: var(--text-dim);">Pages Visited:</span> <strong style="color: var(--primary-600); font-size: 1.1rem;">${d.pagesVisited}</strong></div>
-            <div><span style="color: var(--text-dim);">Records Extracted:</span> <strong style="color: var(--success); font-size: 1.1rem;">${d.validRecordsExtracted}</strong></div>
-            <div><span style="color: var(--text-dim);">Duplicate URLs Skipped:</span> <strong>${d.duplicateUrlsSkipped}</strong></div>
-            <div><span style="color: var(--text-dim);">Invalid Records Skipped:</span> <strong>${d.invalidRecordsSkipped}</strong></div>
-            <div><span style="color: var(--text-dim);">Crawl Status:</span> <strong style="color: var(--success);">${d.status}</strong></div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; background: var(--bg-subtle); border: 1px solid var(--border-color); padding: 14px; border-radius: var(--radius-sm); font-size: 0.8125rem;">
+            <div><span style="color: var(--text-dim);">Pages Visited:</span> <strong style="color: var(--text-main); font-size: 1.05rem;">${d.pagesVisited}</strong></div>
+            <div><span style="color: var(--text-dim);">Records Extracted:</span> <strong style="color: var(--status-avail); font-size: 1.05rem;">${d.validRecordsExtracted}</strong></div>
+            <div><span style="color: var(--text-dim);">Duplicate URLs:</span> <strong>${d.duplicateUrlsSkipped}</strong></div>
+            <div><span style="color: var(--text-dim);">Invalid Records:</span> <strong>${d.invalidRecordsSkipped}</strong></div>
+            <div><span style="color: var(--text-dim);">Status:</span> <strong style="color: var(--status-avail);">${d.status}</strong></div>
           </div>
         `;
 
@@ -239,17 +233,17 @@ const Discovery = {
 
         resultsContainer.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0 12px 0;">
-            <h4 style="font-size: 1rem; font-weight: 700;">Extracted Records For Catalogue Review (${this.lastExtractedBooks.length})</h4>
+            <h4 style="font-size: 0.9375rem; font-weight: 600;">Extracted Records For Catalogue Review (${this.lastExtractedBooks.length})</h4>
             <button class="btn btn-primary btn-sm" onclick="Discovery.importAllExtracted()">
-              📥 Import All to Library Catalogue
+              Import All to Catalogue
             </button>
           </div>
           <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px;">
             ${this.lastExtractedBooks.map((b, idx) => `
               <div class="card" style="padding: 16px; border: 1px solid var(--border-color);">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                  <span class="user-role-badge member" style="font-size: 0.75rem;">${b.category || 'General'}</span>
-                  ${b.rating ? `<span style="font-size: 0.8rem; color: #FBBF24;">⭐ ${b.rating} / 5</span>` : ''}
+                  <span class="user-role-badge member">${b.category || 'General'}</span>
+                  ${b.rating ? `<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Rating: ${b.rating} / 5</span>` : ''}
                 </div>
                 <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 4px;">${b.title}</h4>
                 <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">

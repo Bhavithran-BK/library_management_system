@@ -47,7 +47,7 @@ const Benchmark = {
       API.toast(err.message, 'error');
     } finally {
       runBtn.disabled = false;
-      runBtn.innerHTML = `<span>🚀 Run Concurrent Benchmark</span>`;
+      runBtn.innerHTML = `<span>Run Concurrent Benchmark</span>`;
     }
   },
 

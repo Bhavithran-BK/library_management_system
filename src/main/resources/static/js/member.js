@@ -54,14 +54,13 @@ const MemberDashboard = {
                         <td><code>${l.loanId}</code></td>
                         <td><strong>${l.bookId}</strong></td>
                         <td>${new Date(l.borrowedAt).toLocaleDateString()}</td>
-                        <td style="${isOverdue ? 'color: var(--danger); font-weight: 700;' : ''}">
+                        <td style="${isOverdue ? 'color: var(--danger); font-weight: 600;' : ''}">
                           ${new Date(l.dueAt).toLocaleDateString()}
-                          ${isOverdue ? ' ⚠️' : ''}
                         </td>
                         <td><span class="status-pill ${statusClass}">${statusLabel}</span></td>
                         <td>
                           <button class="btn btn-outline btn-sm" onclick="MemberDashboard.returnBook('${l.loanId}')">
-                            📥 Return Book
+                            Return Book
                           </button>
                         </td>
                       </tr>
@@ -208,7 +207,7 @@ const MemberDashboard = {
       if (res && res.success && res.data) {
         const fines = res.data;
         if (fines.length === 0) {
-          list.innerHTML = `<div style="text-align: center; padding: 24px; color: var(--text-dim);">No fine transactions on record. Your account is in good standing! 🎉</div>`;
+          list.innerHTML = `<div style="text-align: center; padding: 24px; color: var(--text-dim);">No fine transactions on record. Your account is in good standing.</div>`;
           return;
         }
 
@@ -239,8 +238,8 @@ const MemberDashboard = {
                       <td><span style="font-size: 0.75rem; color: var(--text-dim);">SIMULATED</span></td>
                       <td>
                         ${isPending ? `
-                          <button class="btn btn-success btn-sm" onclick="MemberDashboard.openPayFineModal('${f.transactionId}', '${f.amount}')">
-                            💳 Pay Fine (Simulated)
+                          <button class="btn btn-primary btn-sm" onclick="MemberDashboard.openPayFineModal('${f.transactionId}', '${f.amount}')">
+                            Pay Fine
                           </button>
                         ` : `
                           <span style="font-size: 0.78rem; color: var(--text-muted);">Ref: ${f.paymentReference || 'PAID'}</span>
@@ -266,8 +265,10 @@ const MemberDashboard = {
 
     content.innerHTML = `
       <div style="text-align: center; margin-bottom: 20px;">
-        <div style="font-size: 32px; margin-bottom: 8px;">💳</div>
-        <h3 style="font-size: 1.2rem; font-weight: 700;">Simulated Fine Settlement</h3>
+        <div style="margin-bottom: 8px; color: var(--accent);">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+        </div>
+        <h3 style="font-size: 1.15rem; font-weight: 600;">Simulated Fine Settlement</h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
           Transaction ID: <code>${txnId}</code>
         </p>

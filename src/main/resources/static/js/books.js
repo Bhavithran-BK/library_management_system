@@ -1,21 +1,26 @@
 /**
  * Book Catalogue, Search, Filtering, and Book Details Modal.
+ * Editorial university library design with genuine book jackets and responsive grid.
  */
 const Books = {
   currentCategory: 'ALL',
   currentSearch: '',
+  currentAvailability: '',
   currentPage: 0,
-  pageSize: 9,
+  pageSize: 12,
   totalPages: 1,
+  allLoadedBooks: [],
 
   async loadCatalogue() {
     const grid = document.getElementById('books-catalogue-grid');
     if (!grid) return;
 
-    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
-      <div class="spinner" style="margin-bottom: 12px; font-size: 24px;">⏳</div>
-      Loading books catalogue...
-    </div>`;
+    grid.innerHTML = `
+      <div class="loading-block">
+        <div class="loading-spinner"></div>
+        <p>Loading catalogue collection…</p>
+      </div>
+    `;
 
     try {
       let queryUrl;
@@ -30,60 +35,107 @@ const Books = {
 
       const res = await API.get(queryUrl);
       if (res && res.success && res.data) {
-        this.renderBooks(res.data.content);
+        this.allLoadedBooks = res.data.content || [];
         this.totalPages = res.data.totalPages || 1;
+        this.applyFiltersAndRender();
         this.renderPagination();
       }
     } catch (err) {
-      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--danger);">
-        Failed to load books: ${err.message}
-      </div>`;
+      grid.innerHTML = `
+        <div class="empty-state-block">
+          <p class="empty-state-title">Unable to load catalogue</p>
+          <p class="empty-state-subtitle">${API.escapeHtml ? API.escapeHtml(err.message) : err.message}</p>
+          <button class="btn btn-outline btn-sm" onclick="Books.loadCatalogue()">Try Again</button>
+        </div>
+      `;
     }
+  },
+
+  setAvailabilityFilter(val) {
+    this.currentAvailability = val;
+    this.applyFiltersAndRender();
+  },
+
+  applyFiltersAndRender() {
+    let filtered = [...this.allLoadedBooks];
+
+    if (this.currentAvailability === 'true') {
+      filtered = filtered.filter(b => b.availableCopies > 0);
+    } else if (this.currentAvailability === 'false') {
+      filtered = filtered.filter(b => b.availableCopies <= 0);
+    }
+
+    this.renderBooks(filtered);
   },
 
   renderBooks(books) {
     const grid = document.getElementById('books-catalogue-grid');
+    if (!grid) return;
+
     if (!books || books.length === 0) {
-      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">
-        <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 6px;">No books found</p>
-        <p style="font-size: 0.85rem;">Try adjusting your search query or category filter.</p>
-      </div>`;
+      grid.innerHTML = `
+        <div class="empty-state-block">
+          <p class="empty-state-title">No books match your criteria</p>
+          <p class="empty-state-subtitle">Try adjusting your search terms or availability filter.</p>
+          <button class="btn btn-outline btn-sm" onclick="Books.resetFilters()">Clear Filters</button>
+        </div>
+      `;
       return;
     }
 
     grid.innerHTML = books.map(book => {
       const isAvailable = book.availableCopies > 0;
-      let dotClass = 'available';
-      let stockText = `${book.availableCopies} of ${book.totalCopies} available`;
+      const statusClass = isAvailable ? 'available' : 'unavailable';
+      const statusLabel = isAvailable 
+        ? `${book.availableCopies} available`
+        : 'Checked out';
 
-      if (book.availableCopies === 0) {
-        dotClass = 'out';
-        stockText = `0 of ${book.totalCopies} available (Reserved/Loaned)`;
-      } else if (book.availableCopies === 1) {
-        dotClass = 'low';
-        stockText = `Only 1 copy left!`;
-      }
+      const authorsStr = Array.isArray(book.authors) 
+        ? book.authors.join(', ') 
+        : (book.authors || 'Unknown');
 
-      const authorsStr = Array.isArray(book.authors) ? book.authors.join(', ') : (book.authors || 'Unknown');
+      const coverHtml = BookCovers.coverMarkup(book.isbn, book.title, authorsStr, 'M');
+      const safeId = (book.bookId || '').replace(/'/g, "\\'");
 
       return `
-        <div class="card book-card" onclick="Books.openBookModal('${book.bookId}')" style="cursor: pointer;">
-          <div class="book-badge-category">${book.category || 'General'}</div>
-          <h3 class="book-title">${book.title}</h3>
-          <div class="book-authors">By ${authorsStr}</div>
-          <p class="book-description">${book.description || 'No description available for this volume.'}</p>
-          <div class="book-footer">
-            <div class="stock-indicator">
-              <span class="stock-dot ${dotClass}"></span>
-              <span>${stockText}</span>
-            </div>
-            <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); Books.openBookModal('${book.bookId}')">
-              View Details →
-            </button>
+        <article class="book-card" tabindex="0" role="button" aria-label="View details for ${BookCovers.escapeHtml(book.title)}" onclick="Books.openBookModal('${safeId}')" onkeydown="if(event.key==='Enter'||event.key===' ') { event.preventDefault(); Books.openBookModal('${safeId}'); }">
+          <div class="book-cover-wrap">
+            ${coverHtml}
           </div>
-        </div>
+          <div class="book-card-info">
+            <span class="book-card-category">${BookCovers.escapeHtml(book.category || 'General')}</span>
+            <h3 class="book-card-title">${BookCovers.escapeHtml(book.title)}</h3>
+            <p class="book-card-authors">${BookCovers.escapeHtml(authorsStr)}</p>
+            <div class="book-card-footer">
+              <span class="status-indicator ${statusClass}">
+                <span class="status-dot"></span>
+                <span>${statusLabel}</span>
+              </span>
+              <span class="book-card-action">Details →</span>
+            </div>
+          </div>
+        </article>
       `;
     }).join('');
+  },
+
+  resetFilters() {
+    this.currentCategory = 'ALL';
+    this.currentSearch = '';
+    this.currentAvailability = '';
+    this.currentPage = 0;
+
+    const searchInput = document.getElementById('catalogue-search-input');
+    if (searchInput) searchInput.value = '';
+
+    const availFilter = document.getElementById('catalogue-avail-filter');
+    if (availFilter) availFilter.value = '';
+
+    document.querySelectorAll('.category-chips .chip').forEach(c => {
+      c.classList.toggle('active', c.dataset.category === 'ALL');
+    });
+
+    this.loadCatalogue();
   },
 
   renderPagination() {
@@ -95,12 +147,12 @@ const Books = {
       return;
     }
 
-    let html = `
-      <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 32px;">
+    container.innerHTML = `
+      <div class="pagination-bar">
         <button class="btn btn-outline btn-sm" ${this.currentPage === 0 ? 'disabled' : ''} onclick="Books.changePage(${this.currentPage - 1})">
           ← Previous
         </button>
-        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+        <span class="pagination-status">
           Page ${this.currentPage + 1} of ${this.totalPages}
         </span>
         <button class="btn btn-outline btn-sm" ${this.currentPage >= this.totalPages - 1 ? 'disabled' : ''} onclick="Books.changePage(${this.currentPage + 1})">
@@ -108,7 +160,6 @@ const Books = {
         </button>
       </div>
     `;
-    container.innerHTML = html;
   },
 
   changePage(newPage) {
@@ -150,9 +201,12 @@ const Books = {
       if (res && res.success && res.data && res.data.suggestions && res.data.suggestions.length > 0) {
         dropdown.innerHTML = res.data.suggestions.map(s => `
           <div class="suggest-item" onclick="Books.applySuggestion('${s.replace(/'/g, "\\'")}')">
-            <span style="color: var(--primary-400);">🔍</span>
-            <span style="flex: 1;">${s}</span>
-            <span class="suggest-badge">Trie</span>
+            <span class="suggest-icon">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+            </span>
+            <span class="suggest-text">${BookCovers.escapeHtml(s)}</span>
           </div>
         `).join('');
         dropdown.style.display = 'block';
@@ -179,60 +233,94 @@ const Books = {
       const b = res.data;
 
       const modal = document.getElementById('book-detail-modal');
+      const dialog = modal.querySelector('.modal-dialog');
+      if (dialog) dialog.classList.add('modal-book-detail');
+
       const content = document.getElementById('book-detail-modal-content');
       
-      const authorsStr = Array.isArray(b.authors) ? b.authors.join(', ') : b.authors;
+      const authorsStr = Array.isArray(b.authors) ? b.authors.join(', ') : (b.authors || 'Unknown');
       const isAvailable = b.availableCopies > 0;
       const isLoggedIn = Auth.isLoggedIn();
+
+      const coverHtml = BookCovers.coverMarkup(b.isbn, b.title, authorsStr, 'L');
+      const statusClass = isAvailable ? 'available' : 'unavailable';
+      const statusText = isAvailable 
+        ? `${b.availableCopies} of ${b.totalCopies} copies available`
+        : `All ${b.totalCopies} copies currently checked out`;
 
       let actionsHtml = '';
       if (!isLoggedIn) {
         actionsHtml = `
-          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 14px; border-radius: var(--radius-md); text-align: center; margin-top: 20px;">
-            <p style="font-size: 0.85rem; color: #FBBF24; margin-bottom: 8px;">Please log in to borrow or reserve this book.</p>
-            <button class="btn btn-primary btn-sm" onclick="App.closeAllModals(); Router.navigate('login');">Log In / Register</button>
+          <div class="modal-auth-prompt">
+            <p>Sign in to borrow this book or place a reservation queue request.</p>
+            <div class="modal-auth-actions">
+              <button class="btn btn-primary btn-sm" onclick="App.closeAllModals(); Router.navigate('login');">Sign In</button>
+              <button class="btn btn-outline btn-sm" onclick="App.closeAllModals(); Router.navigate('register');">Register</button>
+            </div>
           </div>
         `;
       } else {
         actionsHtml = `
-          <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+          <div class="book-detail-actions">
             ${isAvailable 
               ? `<button class="btn btn-primary" onclick="Books.borrowBook('${b.bookId}')">
-                  📖 Borrow Book (${b.availableCopies} available)
+                  Borrow Book
                 </button>`
-              : `<button class="btn btn-warning" style="background: #F59E0B; color: #000;" onclick="Books.reserveBook('${b.bookId}')">
-                  ⏳ Reserve Book (Place in Queue)
+              : `<button class="btn btn-warning" onclick="Books.reserveBook('${b.bookId}')">
+                  Reserve Book (Join Queue)
                 </button>`
             }
-            <button class="btn btn-outline" onclick="Books.shareBook('${b.bookId}', '${b.title}')">
-              🔗 Share Short Link
+            <button class="btn btn-outline" onclick="Books.shareBook('${b.bookId}', '${b.title.replace(/'/g, "\\'")}')">
+              Share Link
             </button>
           </div>
         `;
       }
 
       content.innerHTML = `
-        <div style="margin-bottom: 16px;">
-          <span class="user-role-badge member" style="margin-bottom: 8px;">${b.category || 'General'}</span>
-          <h2 style="font-size: 1.4rem; font-weight: 700; margin-top: 6px; line-height: 1.3;">${b.title}</h2>
-          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">By <strong>${authorsStr}</strong></p>
+        <div class="book-detail-grid">
+          <div class="book-detail-cover">
+            ${coverHtml}
+          </div>
+          <div class="book-detail-info">
+            <span class="detail-category-label">${BookCovers.escapeHtml(b.category || 'General')}</span>
+            <h2 class="detail-book-title">${BookCovers.escapeHtml(b.title)}</h2>
+            <p class="detail-book-author">By <strong>${BookCovers.escapeHtml(authorsStr)}</strong></p>
+            
+            <div class="detail-availability-bar">
+              <span class="status-indicator ${statusClass}">
+                <span class="status-dot"></span>
+                <strong>${statusText}</strong>
+              </span>
+            </div>
+
+            <div class="detail-meta-table">
+              <div class="meta-row">
+                <span class="meta-label">Book ID</span>
+                <span class="meta-val"><code>${BookCovers.escapeHtml(b.bookId)}</code></span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">ISBN</span>
+                <span class="meta-val"><code>${BookCovers.escapeHtml(b.isbn || '—')}</code></span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Shelf Location</span>
+                <span class="meta-val">${BookCovers.escapeHtml(b.location || 'Main Stacks')}</span>
+              </div>
+            </div>
+
+            ${b.description ? `
+              <div class="detail-description">
+                <h4 class="detail-section-title">Overview</h4>
+                <p>${BookCovers.escapeHtml(b.description)}</p>
+              </div>
+            ` : ''}
+
+            <div id="book-share-result" style="display: none; margin-top: 14px;"></div>
+
+            ${actionsHtml}
+          </div>
         </div>
-
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: var(--bg-card-subtle); border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); margin-bottom: 20px; font-size: 0.85rem;">
-          <div><span style="color: var(--text-dim);">Book ID:</span> <strong>${b.bookId}</strong></div>
-          <div><span style="color: var(--text-dim);">ISBN:</span> <strong>${b.isbn}</strong></div>
-          <div><span style="color: var(--text-dim);">Location / Shelf:</span> <strong>${b.location || 'Main Section'}</strong></div>
-          <div><span style="color: var(--text-dim);">Available Stock:</span> <strong style="color: ${isAvailable ? 'var(--success)' : 'var(--danger)'};">${b.availableCopies} / ${b.totalCopies}</strong></div>
-        </div>
-
-        <div style="margin-bottom: 20px;">
-          <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); margin-bottom: 6px;">Description</h4>
-          <p style="font-size: 0.88rem; line-height: 1.6; color: var(--text-muted);">${b.description || 'No detailed description available.'}</p>
-        </div>
-
-        <div id="book-share-result" style="display: none; margin-top: 14px;"></div>
-
-        ${actionsHtml}
       `;
 
       modal.classList.add('active');
@@ -252,7 +340,7 @@ const Books = {
       const memberId = Auth.getMemberId();
       const res = await API.post('/api/loans', { memberId, bookId });
       if (res && res.success) {
-        API.toast(`Book borrowed successfully! Due: ${new Date(res.data.dueAt).toLocaleDateString()}`, 'success');
+        API.toast(`Book borrowed successfully. Due date: ${new Date(res.data.dueAt).toLocaleDateString()}`, 'success');
         App.closeAllModals();
         this.loadCatalogue();
         App.loadDashboardData();
@@ -276,7 +364,7 @@ const Books = {
       const memberId = Auth.getMemberId();
       const res = await API.post('/api/reservations', { memberId, bookId });
       if (res && res.success) {
-        API.toast(`Reservation placed! Queue position: #${res.data.queuePosition}`, 'success');
+        API.toast(`Reservation confirmed. Queue position: #${res.data.queuePosition}`, 'success');
         App.closeAllModals();
         this.loadCatalogue();
         App.loadDashboardData();
@@ -291,19 +379,18 @@ const Books = {
 
   async shareBook(bookId, title) {
     try {
-      // Integration call with URL Shortener service
-      const targetPath = `/#books?id=${bookId}`;
+      const targetPath = `/#catalogue?id=${bookId}`;
       const res = await API.post('/api/short-links', { targetPath, title });
       const shareResult = document.getElementById('book-share-result');
       if (shareResult && res && res.success) {
         const fullShortUrl = window.location.origin + res.data.shortUrl;
         shareResult.style.display = 'block';
         shareResult.innerHTML = `
-          <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 12px; border-radius: var(--radius-md); font-size: 0.82rem;">
-            <div style="font-weight: 600; color: var(--primary-600); margin-bottom: 4px;">🔗 Shareable Short Link:</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <input type="text" class="form-control" readonly value="${fullShortUrl}" style="font-family: monospace; font-size: 0.8rem; padding: 6px 10px;" id="share-link-input" />
-              <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${fullShortUrl}'); API.toast('Copied short link to clipboard!', 'success');">Copy</button>
+          <div class="share-link-box">
+            <span class="share-link-label">Shareable Link:</span>
+            <div class="share-link-row">
+              <input type="text" class="form-control" readonly value="${fullShortUrl}" id="share-link-input" />
+              <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${fullShortUrl}'); API.toast('Link copied to clipboard', 'success');">Copy</button>
             </div>
           </div>
         `;

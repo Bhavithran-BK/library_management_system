@@ -52,10 +52,10 @@ const Distribution = {
     if (clusterBadge) {
       if (sharding.isShardedCluster) {
         clusterBadge.className = 'status-pill active';
-        clusterBadge.innerHTML = '🟢 SHARDED CLUSTER ACTIVE';
+        clusterBadge.innerHTML = '<span class="status-dot"></span> Sharded Cluster Active';
       } else {
         clusterBadge.className = 'status-pill active';
-        clusterBadge.innerHTML = '🟢 STORAGE NODE ACTIVE';
+        clusterBadge.innerHTML = '<span class="status-dot"></span> Storage Node Active';
       }
     }
 
@@ -139,13 +139,13 @@ const Distribution = {
         return `
           <div class="card stat-card" style="padding: 16px; border: 1px solid var(--border-color); background: rgba(15, 23, 42, 0.65);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-              <div style="font-weight: 700; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 1.2rem;">🗄️</span> ${node}
+              <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                <span class="user-role-badge" style="font-size: 0.72rem; padding: 2px 6px;">NODE</span> ${node}
               </div>
               ${ring.activeNodeCount > 1 ? `
                 <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 0.75rem; color: var(--danger); border-color: rgba(239, 68, 68, 0.4);"
                         onclick="Distribution.removeNode('${node}')" title="Remove node and trigger consistent rebalance">
-                  ✕ Remove
+                  Remove
                 </button>
               ` : ''}
             </div>
@@ -241,7 +241,7 @@ const Distribution = {
           <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: var(--radius-md); padding: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
               <span style="font-size: 0.85rem; color: var(--text-muted);">Assigned Logical Node:</span>
-              <span class="user-role-badge admin" style="font-size: 0.85rem;">🗄️ ${d.assignedNode}</span>
+              <span class="user-role-badge admin" style="font-size: 0.85rem;">${d.assignedNode}</span>
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; font-size: 0.8rem;">
               <div><span style="color: var(--text-dim);">Murmur3 32-bit Hash:</span> <code style="color: #A5B4FC;">${d.keyHash}</code></div>
@@ -282,8 +282,8 @@ const Distribution = {
         const d = res.data;
         resultBox.innerHTML = `
           <div style="border-left: 4px solid var(--accent-cyan); padding-left: 14px; margin-bottom: 16px;">
-            <h4 style="font-size: 1rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px;">
-              ${d.operation === 'ADD' ? '🟢 Node Addition Simulation' : '🔴 Node Removal Simulation'}
+            <h4 style="font-size: 1rem; font-weight: 600; color: var(--text-main); margin-bottom: 4px;">
+              ${d.operation === 'ADD' ? 'Node Addition Simulation' : 'Node Removal Simulation'}
             </h4>
             <p style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5;">${d.conclusion}</p>
           </div>

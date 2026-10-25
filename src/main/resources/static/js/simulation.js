@@ -110,7 +110,7 @@ const SimApp = {
         if (container && Array.isArray(d.samplePoints)) {
           container.innerHTML = d.samplePoints.map(s => {
             const cls = s.allowed ? 'allowed' : 'throttled';
-            const icon = s.allowed ? '🟢 200 OK' : '🔴 429 TOO MANY REQUESTS';
+            const icon = s.allowed ? '200 OK' : '429 TOO MANY REQUESTS';
             const retryStr = s.retryAfter > 0 ? ` &bull; Retry-After: ${s.retryAfter}s` : '';
             return `
               <div class="burst-sample-item ${cls}">
@@ -366,12 +366,12 @@ const SimApp = {
               </td>
               <td><span title="${link.targetUrl}">${link.bookId ? `<strong>[${link.bookId}]</strong> ` : ''}${link.title || link.targetUrl}</span></td>
               <td>
-                <span class="status-pill active" style="font-size: 0.7rem; padding: 2px 6px;">⚡ REDIS T1 + 💾 MONGO T2</span>
+                <span class="status-pill active" style="font-size: 0.7rem; padding: 2px 6px;">REDIS T1 + MONGO T2</span>
               </td>
               <td><strong>${link.clickCount || 0}</strong> clicks</td>
               <td>
                 <div style="display: flex; gap: 6px;">
-                  <button class="btn btn-outline btn-sm" onclick="SimApp.copyText('${shortUrl}')">📋 Copy</button>
+                  <button class="btn btn-outline btn-sm" onclick="SimApp.copyText('${shortUrl}')">Copy</button>
                   <a href="/s/${link.code}" target="_blank" class="btn btn-primary btn-sm" style="text-decoration: none;">Test ↗</a>
                 </div>
               </td>
@@ -422,10 +422,10 @@ const SimApp = {
       if (badge && json && json.data) {
         if (json.data.redisConnected) {
           badge.className = 'status-pill active';
-          badge.textContent = '🟢 REDIS LUA ENGINE READY';
+          badge.textContent = 'REDIS LUA ENGINE READY';
         } else {
           badge.className = 'status-pill pending';
-          badge.textContent = '🟡 IN-MEMORY ENGINE READY';
+          badge.textContent = 'IN-MEMORY ENGINE READY';
         }
       }
     } catch (e) {
@@ -438,16 +438,17 @@ const SimApp = {
     if (!container) return;
 
     const el = document.createElement('div');
-    el.style.background = type === 'success' ? '#059669' :
-                          type === 'error' ? '#DC2626' :
-                          type === 'warning' ? '#D97706' : '#4F46E5';
+    el.style.background = type === 'success' ? '#355B45' :
+                          type === 'error' ? '#9B4A42' :
+                          type === 'warning' ? '#8C6D23' : '#20231F';
     el.style.color = '#FFFFFF';
     el.style.padding = '10px 16px';
-    el.style.borderRadius = '8px';
+    el.style.borderRadius = '6px';
     el.style.fontSize = '0.84rem';
-    el.style.fontWeight = '600';
-    el.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)';
-    el.style.transition = 'all 0.3s ease';
+    el.style.fontWeight = '500';
+    el.style.boxShadow = '0 4px 12px rgba(32, 35, 31, 0.12)';
+    el.style.border = '1px solid rgba(0,0,0,0.06)';
+    el.style.transition = 'all 0.2s ease';
     el.style.display = 'flex';
     el.style.alignItems = 'center';
     el.style.gap = '8px';
@@ -456,8 +457,8 @@ const SimApp = {
     container.appendChild(el);
     setTimeout(() => {
       el.style.opacity = '0';
-      el.style.transform = 'translateY(10px)';
-      setTimeout(() => el.remove(), 300);
+      el.style.transform = 'translateY(6px)';
+      setTimeout(() => el.remove(), 200);
     }, 3500);
   }
 };

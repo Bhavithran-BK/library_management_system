@@ -67,10 +67,10 @@ const ShortLinksUI = {
     if (redisStatusEl) {
       if (data.redisConnected) {
         redisStatusEl.className = 'status-pill active';
-        redisStatusEl.innerHTML = '🟢 TRAFFIC PROTECTION ACTIVE';
+        redisStatusEl.innerHTML = '<span class="status-dot"></span> Traffic Protection Active';
       } else {
         redisStatusEl.className = 'status-pill pending';
-        redisStatusEl.innerHTML = '🟡 IN-MEMORY PROTECTION ACTIVE';
+        redisStatusEl.innerHTML = '<span class="status-dot"></span> In-Memory Protection Active';
       }
     }
 
@@ -105,8 +105,7 @@ const ShortLinksUI = {
       simResult.style.display = 'block';
       simResult.innerHTML = `
         <div style="text-align: center; padding: 24px;">
-          <div style="font-size: 1.5rem; margin-bottom: 8px;">⚡</div>
-          <div style="font-weight: 600; color: var(--primary-600);">Simulating Burst of ${count} Concurrent Requests...</div>
+          <div style="font-weight: 600; color: var(--accent);">Simulating Burst of ${count} Concurrent Requests...</div>
           <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">Evaluating token bucket capacity and rate limiting</div>
         </div>
       `;
@@ -154,8 +153,8 @@ const ShortLinksUI = {
     simResult.innerHTML = `
       <div style="border-top: 1px solid var(--border-color); padding-top: 18px; margin-top: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
-          <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-            <span>📊</span> Burst Simulation Execution Report
+          <h4 style="font-size: 1rem; font-weight: 600; color: var(--text-main);">
+            Burst Simulation Execution Report
           </h4>
           <span class="badge" style="background: var(--primary-100); color: var(--primary-700); font-family: var(--font-mono);">
             Burst Size: ${data.burstSize} requests
@@ -274,8 +273,8 @@ const ShortLinksUI = {
     cardEl.innerHTML = `
       <div style="background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span style="font-weight: 700; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px;">
-            <span>✨</span> Base62 Short Link Ready
+          <span style="font-weight: 600; color: var(--accent);">
+            Base62 Short Link Ready
           </span>
           <span class="badge" style="background: var(--primary-100); color: var(--primary-700); font-family: var(--font-mono);">
             Code: ${data.code}
@@ -331,7 +330,7 @@ const ShortLinksUI = {
               <a href="${link.shortUrl}" target="_blank" style="font-family: var(--font-mono); font-size: 0.82rem; color: var(--primary-600); text-decoration: underline;">
                 ${link.shortUrl}
               </a>
-              <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 0.72rem;" onclick="navigator.clipboard.writeText('${fullUrl}'); API.toast('Copied link!', 'success');">📋</button>
+              <button class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 0.72rem;" onclick="navigator.clipboard.writeText('${fullUrl}'); API.toast('Copied link!', 'success');">Copy</button>
             </div>
           </td>
           <td style="font-size: 0.82rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${link.targetUrl}">
@@ -364,8 +363,8 @@ const ShortLinksUI = {
             <div style="padding: 10px 0;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
                 <h4 style="color: var(--primary-600); font-size: 1.1rem; font-weight: 700;">Short Link Analytics: /s/${d.code}</h4>
-                <span class="badge" style="background: ${d.cachedInRedis ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)'}; color: ${d.cachedInRedis ? '#059669' : '#DC2626'}; font-weight: 700;">
-                  ${d.cachedInRedis ? '⚡ Redis Cache HIT' : '⚠️ Redis Cache MISS'}
+                <span class="badge" style="background: ${d.cachedInRedis ? 'rgba(53, 91, 69, 0.12)' : 'rgba(155, 74, 66, 0.12)'}; color: ${d.cachedInRedis ? '#355B45' : '#9B4A42'}; font-weight: 600;">
+                  ${d.cachedInRedis ? 'Redis Cache HIT' : 'Redis Cache MISS'}
                 </span>
               </div>
               <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px;">

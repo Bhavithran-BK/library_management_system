@@ -3,119 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apex Central Library | Digital Management Portal</title>
-  <meta name="description" content="Apex Central Library management portal: Book catalogue, smart instant search, loan circulation, member services, and cloud storage repository.">
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <title>Library | Management System</title>
+  <meta name="description" content="Library management: book catalogue, search, loans, member services, and administration.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Top Navigation Trigger Area & Peek Indicator -->
-  <div id="top-nav-trigger" class="top-nav-trigger" aria-label="Navigation trigger"></div>
-  <div id="nav-peek-indicator" class="nav-peek-indicator" title="Hover to view navigation menu">
-    <div class="peek-dot"></div>
-    <span>Apex Central Library</span>
-    <span class="peek-chevron">▼</span>
-  </div>
-
-  <!-- Top Glass Navigation Bar (Reveals on Hover) -->
-  <header id="top-navbar" class="top-navbar">
-    <div class="top-navbar-container">
-      
-      <!-- Brand Section -->
-      <div class="brand-section" onclick="Router.navigate('catalogue')" role="button" tabindex="0" title="Apex Central Library">
-        <div class="brand-logo-icon">🏛️</div>
-        <div class="brand-info">
-          <h2>Apex Central Library</h2>
-          <span class="brand-badge">Digital Management Portal</span>
+  <div class="app-shell">
+    <aside class="sidebar" id="app-sidebar" aria-label="Main navigation">
+      <div class="sidebar-brand" onclick="Router.navigate('catalogue')" role="button" tabindex="0">
+        <div class="sidebar-brand-row">
+          <div class="sidebar-logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              <path d="M9 7h6M9 11h4"/>
+            </svg>
+          </div>
+          <div>
+            <span class="sidebar-title">Library</span>
+            <span class="sidebar-tagline">MANAGEMENT SYSTEM</span>
+          </div>
         </div>
       </div>
 
-      <!-- Main Horizontal Navigation Menu -->
-      <nav class="nav-menu" id="main-nav-menu">
-        <a class="nav-item active" data-view="catalogue" id="nav-catalogue">
-          <span class="nav-icon">📖</span>
-          <span class="nav-label">Catalogue</span>
-        </a>
-        <a class="nav-item" data-view="discovery" id="nav-discovery">
-          <span class="nav-icon">🔍</span>
-          <span class="nav-label">Search</span>
-        </a>
-        <a class="nav-item" data-view="dashboard" id="nav-dashboard">
-          <span class="nav-icon">📊</span>
-          <span class="nav-label">Dashboard</span>
-        </a>
-        <a class="nav-item" data-view="shortlinks" id="nav-shortlinks">
-          <span class="nav-icon">🔗</span>
-          <span class="nav-label">Share Links</span>
-        </a>
-        <a class="nav-item" href="/simulation.html" id="nav-simulation" title="Interactive System Design Simulations (Member 4)">
-          <span class="nav-icon">⚡</span>
-          <span class="nav-label">Simulation</span>
-        </a>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Browse</div>
+        <div class="nav-menu" id="main-nav-menu">
+          <a class="nav-item active" data-view="catalogue" id="nav-catalogue">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+            <span class="nav-label">Catalogue</span>
+          </a>
+          <a class="nav-item" data-view="discovery" id="nav-discovery">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+            <span class="nav-label">Search</span>
+          </a>
+          <a class="nav-item" data-view="dashboard" id="nav-dashboard">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+            <span class="nav-label">Dashboard</span>
+          </a>
 
-        <!-- Member Only Menu -->
-        <div id="nav-member-group" class="nav-dynamic-group" style="display: none;">
-          <div class="nav-group-divider"></div>
-          <a class="nav-item" data-view="member" id="nav-member">
-            <span class="nav-icon">👤</span>
-            <span class="nav-label">My Library</span>
+          <div class="nav-section-label">Tools</div>
+          <a class="nav-item" data-view="shortlinks" id="nav-shortlinks">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+            <span class="nav-label">Share Links</span>
           </a>
-        </div>
+          <a class="nav-item" href="/simulation.html" id="nav-simulation" title="System design simulations">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+            <span class="nav-label">Simulation</span>
+          </a>
 
-        <!-- Admin Only Menu -->
-        <div id="nav-admin-group" class="nav-dynamic-group" style="display: none;">
-          <div class="nav-group-divider"></div>
-          <a class="nav-item" data-view="admin" id="nav-admin">
-            <span class="nav-icon">⚙️</span>
-            <span class="nav-label">Staff Admin</span>
-          </a>
-        </div>
+          <div id="nav-member-group" class="nav-dynamic-group" style="display: none;">
+            <div class="nav-section-label">Account</div>
+            <a class="nav-item" data-view="member" id="nav-member">
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+              <span class="nav-label">My Library</span>
+            </a>
+          </div>
 
-        <!-- Guest Only Menu -->
-        <div id="nav-guest-group" class="nav-dynamic-group">
-          <div class="nav-group-divider"></div>
-          <a class="nav-item" data-view="login" id="nav-login">
-            <span class="nav-icon">🔐</span>
-            <span class="nav-label">Sign In</span>
-          </a>
-          <a class="nav-item btn-nav-cta" data-view="register" id="nav-register">
-            <span class="nav-icon">📝</span>
-            <span class="nav-label">Register</span>
-          </a>
+          <div id="nav-admin-group" class="nav-dynamic-group" style="display: none;">
+            <div class="nav-section-label">Staff</div>
+            <a class="nav-item" data-view="admin" id="nav-admin">
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></span>
+              <span class="nav-label">Administration</span>
+            </a>
+          </div>
+
+          <div id="nav-guest-group" class="nav-dynamic-group">
+            <div class="nav-section-label">Access</div>
+            <a class="nav-item" data-view="login" id="nav-login">
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></span>
+              <span class="nav-label">Sign In</span>
+            </a>
+            <a class="nav-item" data-view="register" id="nav-register">
+              <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></span>
+              <span class="nav-label">Register</span>
+            </a>
+          </div>
         </div>
       </nav>
 
-      <!-- Right Actions: User Profile Card, Mobile Toggle, Pin Button -->
-      <div class="navbar-right-actions">
-        <!-- User Card (Populated by Auth.js) -->
-        <div class="user-card" id="sidebar-user-card" style="display: none;">
+      <div class="sidebar-footer">
+        <div class="sidebar-user-card" id="sidebar-user-card">
           <div class="user-avatar" id="user-avatar">A</div>
           <div class="user-details">
-            <div class="user-name" id="user-display-name">Alice Johnson</div>
+            <div class="user-name" id="user-display-name">Patron</div>
             <span class="user-role-badge member" id="user-role-badge">MEMBER</span>
           </div>
-          <button class="btn-logout" title="Sign Out" onclick="Auth.logout()">🚪</button>
+          <button class="btn-logout" type="button" title="Sign out" aria-label="Sign out" onclick="Auth.logout()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
         </div>
-
-        <!-- Pin Nav button -->
-        <button id="btn-pin-nav" class="btn-pin-nav" title="Click to pin navigation permanently" onclick="App.toggleNavPin()">
-          <span id="pin-icon" class="pin-icon">📌</span>
-          <span class="pin-text">Pin Bar</span>
-        </button>
-
-        <!-- Mobile Menu Toggle Button -->
-        <button class="btn-mobile-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu">☰</button>
       </div>
+    </aside>
 
-    </div>
-  </header>
+    <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
 
-  <!-- Main Application Wrapper -->
-  <div class="app-container">
-    <div class="main-wrapper">
+    <div class="main-column">
+      <header class="page-header-bar">
+        <div class="page-header-left">
+          <button class="btn-mobile-toggle" id="mobile-menu-btn" type="button" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <nav id="page-breadcrumb" aria-label="Breadcrumb">Library / <strong>Catalogue</strong></nav>
+        </div>
+      </header>
+
+      <div class="app-container">
+        <div class="main-wrapper">
 
       <!-- Dynamic Content Views -->
       <main class="content-body">
@@ -123,16 +120,23 @@
         <!-- ================= VIEW 1: BOOK CATALOGUE (PRIMARY VIEW) ================= -->
         <!-- ================= VIEW 1: BOOK CATALOGUE (PRIMARY VIEW) ================= -->
         <section id="view-catalogue" class="view-section active">
-          <div style="margin-bottom: 20px;">
-            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Book Catalogue</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Explore our library collections, check real-time availability, and borrow or reserve titles.</p>
+          <div class="page-intro">
+            <h1 class="page-title-serif">Book Catalogue</h1>
+            <p class="page-subtitle">Explore the collection and find your next read.</p>
           </div>
 
-          <!-- Search & Filter Controls -->
-          <div class="search-filter-bar">
-            <div class="search-input-wrap">
-              <span class="search-icon-inside">🔍</span>
-              <input type="text" id="catalogue-search-input" placeholder="Search books by title, author, or ISBN..." oninput="Books.handleSearch(this.value)">
+          <div class="catalogue-toolbar">
+            <div class="catalogue-toolbar-row">
+              <div class="search-input-wrap">
+                <span class="search-icon-inside" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+                <input type="search" id="catalogue-search-input" placeholder="Search by title, author, or ISBN…" autocomplete="off" oninput="Books.handleSearch(this.value)">
+                <div id="catalogue-suggest-dropdown" class="suggest-dropdown"></div>
+              </div>
+              <select class="filter-select" id="catalogue-avail-filter" aria-label="Filter by availability" onchange="Books.setAvailabilityFilter(this.value)">
+                <option value="">All availability</option>
+                <option value="true">Available only</option>
+                <option value="false">Unavailable</option>
+              </select>
             </div>
 
             <div class="category-chips">
@@ -146,7 +150,6 @@
             </div>
           </div>
 
-          <!-- Books Grid -->
           <div id="books-catalogue-grid" class="books-grid"></div>
 
           <!-- Pagination -->
@@ -155,129 +158,109 @@
 
         <!-- ================= VIEW 2: DASHBOARD ================= -->
         <section id="view-dashboard" class="view-section">
-          <!-- Stats Grid -->
+          <div class="page-intro">
+            <h1 class="page-title-serif" id="dashboard-greeting">Good morning</h1>
+            <p class="page-subtitle">Here's what's happening in your library today.</p>
+          </div>
+
           <div class="stats-grid">
-            <div class="card stat-card">
-              <div class="stat-icon-wrap books">📚</div>
+            <div class="card stat-card stat-card-compact">
+              <div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
               <div class="stat-content">
-                <h3 id="stat-total-books">0</h3>
-                <p>Total Titles in Catalogue</p>
+                <div class="stat-value" id="stat-total-books">0</div>
+                <div class="stat-label">Total Books</div>
               </div>
             </div>
-
-            <div class="card stat-card">
-              <div class="stat-icon-wrap available">✅</div>
+            <div class="card stat-card stat-card-compact">
+              <div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
               <div class="stat-content">
-                <h3 id="stat-available-books">0</h3>
-                <p>Available for Borrowing</p>
+                <div class="stat-value" id="stat-available-books">0</div>
+                <div class="stat-label">Available Books</div>
               </div>
             </div>
-
-            <div class="card stat-card">
-              <div class="stat-icon-wrap loans">🔄</div>
+            <div class="card stat-card stat-card-compact">
+              <div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/></svg></div>
               <div class="stat-content">
-                <h3 id="stat-active-loans">0</h3>
-                <p>Active Borrowing Loans</p>
+                <div class="stat-value" id="stat-active-loans">0</div>
+                <div class="stat-label">Books Issued</div>
               </div>
             </div>
-
-            <div class="card stat-card">
-              <div class="stat-icon-wrap reservations">⏳</div>
+            <div class="card stat-card stat-card-compact">
+              <div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
               <div class="stat-content">
-                <h3 id="stat-total-reservations">0</h3>
-                <p>Pending Reservations</p>
-              </div>
-            </div>
-
-            <div class="card stat-card">
-              <div class="stat-icon-wrap fines">💵</div>
-              <div class="stat-content">
-                <h3 id="stat-pending-fines">$0.00</h3>
-                <p>Outstanding Fines</p>
+                <div class="stat-value" id="stat-overdue-loans">—</div>
+                <div class="stat-label">Overdue Returns</div>
               </div>
             </div>
           </div>
 
-          <!-- Clean Welcome Hero Banner -->
-          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px;" class="dashboard-hero-grid">
+          <div class="dashboard-two-col">
             <div class="card">
-              <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Welcome to Apex Central Library</h3>
-              <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 22px;">
-                Access our comprehensive repository of research monographs, reference textbooks, and technical literature. Search through collections instantly, borrow or reserve popular volumes, and manage circulation records through our digital portal.
-              </p>
-              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="Router.navigate('catalogue')">📖 Browse Full Catalogue</button>
-                <button class="btn btn-outline" onclick="Router.navigate('discovery')">🔍 Search Collections</button>
-                <button class="btn btn-outline" onclick="Router.navigate('shortlinks')">🔗 Share Links</button>
-              </div>
+              <h2 class="panel-heading">Recently Added</h2>
+              <div id="dashboard-recent-books"></div>
+              <a class="panel-link" href="#" onclick="event.preventDefault(); Router.navigate('catalogue');">View catalogue</a>
             </div>
-
-            <div class="card" style="border-color: rgba(99, 102, 241, 0.2);">
-              <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--primary-600);">Circulation & Hours</h3>
-              <div style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px;">
-                <p><strong>🕒 Main Reading Hall:</strong> Mon – Sat, 8:00 AM – 10:00 PM</p>
-                <p><strong>📚 Borrowing Quota:</strong> Up to 5 titles per patron</p>
-                <p><strong>⏳ Loan Duration:</strong> 14 days with auto-renewal</p>
-              </div>
-              <div style="display: flex; gap: 8px;">
-                <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Router.navigate('member')">👤 Patron Portal</button>
-                <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Router.navigate('catalogue')">📖 Browse</button>
-              </div>
+            <div class="card">
+              <h2 class="panel-heading">Due Soon</h2>
+              <div id="dashboard-recent-activity"></div>
             </div>
           </div>
+
+          <div class="quick-actions-bar" id="dashboard-quick-actions"></div>
+          <span id="stat-total-reservations" style="display:none">0</span>
+          <span id="stat-pending-fines" style="display:none">0</span>
         </section>
 
         <!-- ================= VIEW 3: MEMBER DASHBOARD ================= -->
         <section id="view-member" class="view-section">
-          <div style="margin-bottom: 24px;">
-            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Patron Portal</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">View your currently borrowed books, return titles, check reservation waitlists, and settle overdue balances.</p>
+          <div class="page-intro">
+            <h1 class="page-title-serif">My Library</h1>
+            <p class="page-subtitle">Borrowed books, reservations, fines, and history.</p>
           </div>
 
-          <!-- Active Loans Section -->
           <div class="card" style="margin-bottom: 24px;">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">📖 Currently Borrowed Books</h3>
+            <h3 class="panel-heading">Currently Borrowed</h3>
             <div id="member-active-loans-list"></div>
           </div>
 
           <!-- Reservations Section -->
           <div class="card" style="margin-bottom: 24px;">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">⏳ Active Book Reservations</h3>
+            <h3 class="panel-heading">Active Reservations</h3>
             <div id="member-reservations-list"></div>
           </div>
 
           <!-- Overdue Fines Section -->
           <div class="card" style="margin-bottom: 24px;">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">💵 Overdue Fines & Surcharges</h3>
+            <h3 class="panel-heading">Overdue Fines</h3>
             <div id="member-fines-list"></div>
           </div>
 
           <!-- Past Loan History -->
           <div class="card">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">📜 Borrowing History</h3>
+            <h3 class="panel-heading">Borrowing History</h3>
             <div id="member-loan-history-list"></div>
           </div>
         </section>
 
         <!-- ================= VIEW 4: ADMIN DASHBOARD ================= -->
         <section id="view-admin" class="view-section">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+          <div class="page-intro" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
             <div>
-              <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Staff Administration</h2>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">Manage library collections, monitor all active loans, manage reservation queues, and view registered patrons.</p>
+              <h1 class="page-title-serif">Administration</h1>
+              <p class="page-subtitle">Catalogue, circulation, patrons, and system tools.</p>
             </div>
-            <button class="btn btn-primary" onclick="Admin.openAddBookModal()">+ Add New Book</button>
+            <button class="btn btn-primary" onclick="Admin.openAddBookModal()">Add book</button>
           </div>
 
           <!-- Admin Tabs -->
-          <div class="category-chips" style="margin-bottom: 20px;">
-            <button class="chip active admin-tab-btn" data-tab="books" onclick="Admin.switchTab('books')">📚 Catalogue Inventory</button>
-            <button class="chip admin-tab-btn" data-tab="loans" onclick="Admin.switchTab('loans')">🔄 Circulation & Loans</button>
-            <button class="chip admin-tab-btn" data-tab="reservations" onclick="Admin.switchTab('reservations')">⏳ Reservation Queues</button>
-            <button class="chip admin-tab-btn" data-tab="members" onclick="Admin.switchTab('members')">👥 Registered Patrons</button>
-            <button class="chip admin-tab-btn" data-tab="traffic" onclick="Admin.switchTab('traffic')">🛡️ Traffic Protection</button>
-            <button class="chip admin-tab-btn" data-tab="storage" onclick="Admin.switchTab('storage')">🌐 Storage Cluster</button>
-            <button class="chip admin-tab-btn" data-tab="idgen" onclick="Admin.switchTab('idgen')">⚡ ID Registry</button>
+          <div class="category-chips admin-tabs-bar" style="margin-bottom: 20px;">
+            <button class="chip active admin-tab-btn" data-tab="books" onclick="Admin.switchTab('books')">Inventory</button>
+            <button class="chip admin-tab-btn" data-tab="loans" onclick="Admin.switchTab('loans')">Circulation</button>
+            <button class="chip admin-tab-btn" data-tab="reservations" onclick="Admin.switchTab('reservations')">Queues</button>
+            <button class="chip admin-tab-btn" data-tab="members" onclick="Admin.switchTab('members')">Patrons</button>
+            <button class="chip admin-tab-btn" data-tab="traffic" onclick="Admin.switchTab('traffic')">Traffic Protection</button>
+            <button class="chip admin-tab-btn" data-tab="storage" onclick="Admin.switchTab('storage')">Storage Cluster</button>
+            <button class="chip admin-tab-btn" data-tab="idgen" onclick="Admin.switchTab('idgen')">ID Registry</button>
           </div>
 
           <!-- Tab Pane: Books -->
@@ -366,8 +349,8 @@
                 <p style="font-size: 0.82rem; color: var(--text-muted);">Protects library endpoints against bot scraping and burst traffic overload.</p>
               </div>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <span id="rl-redis-status" class="status-pill active">🟢 TRAFFIC PROTECTION ACTIVE</span>
-                <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadRateLimitStats()">🔄 Refresh</button>
+                <span id="rl-redis-status" class="status-pill active"><span class="status-dot"></span> Traffic Protection Active</span>
+                <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadRateLimitStats()">Refresh</button>
               </div>
             </div>
 
@@ -424,8 +407,8 @@
 
                 <!-- Slug Encoding Visualizer -->
                 <div style="border-top: 1px solid var(--border-color); padding-top: 14px;">
-                  <div style="font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">
-                    🔢 Base62 Accession Slug Encoder:
+                  <div style="font-size: 0.84rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">
+                    Base62 Accession Slug Encoder:
                   </div>
                   <div style="display: flex; gap: 8px; align-items: center;">
                     <input type="number" class="form-control" id="base62-demo-num" placeholder="e.g. 100042" style="font-family: var(--font-mono); font-size: 0.85rem; max-width: 180px;" value="100042">
@@ -466,8 +449,8 @@
                 <p style="font-size: 0.82rem; color: var(--text-muted);">Database shard topology, partition ring management, and consistent hashing router.</p>
               </div>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <span id="dist-cluster-badge" class="status-pill active">CLUSTER READY</span>
-                <button class="btn btn-outline btn-sm" onclick="Distribution.loadOverview()">🔄 Refresh Status</button>
+                <span id="dist-cluster-badge" class="status-pill active">Cluster Ready</span>
+                <button class="btn btn-outline btn-sm" onclick="Distribution.loadOverview()">Refresh</button>
               </div>
             </div>
 
@@ -500,10 +483,10 @@
             </div>
 
             <!-- MongoDB Sharding Architecture Panel -->
-            <div class="card" style="margin-bottom: 24px; border-color: rgba(99, 102, 241, 0.25);">
+            <div class="card" style="margin-bottom: 24px;">
               <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
-                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-600); display: flex; align-items: center; gap: 8px;">
-                  <span>🍃</span> Database Cluster Architecture
+                <h4 style="font-size: 1.05rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                  Database Cluster Architecture
                 </h4>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
                   Cluster Status: <strong id="dist-cluster-type" style="color: var(--text-main);">STANDALONE_DEV</strong> | Active Database: <code id="dist-conn-uri" style="color: var(--primary-600);">mongodb://localhost:27017/library_db</code>
@@ -533,7 +516,7 @@
             <div class="card" style="margin-bottom: 24px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
                 <div>
-                  <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">🌐 Storage Nodes & Key Distribution</h4>
+                  <h4 style="font-size: 1.05rem; font-weight: 600; color: var(--text-main);">Storage Nodes & Key Distribution</h4>
                   <p style="font-size: 0.8rem; color: var(--text-muted);">
                     Partition Router: <strong id="dist-algo">32-bit MurmurHash3</strong> | Catalogued Entities: <strong id="dist-total-keys" style="color: var(--primary-600);">0</strong> records
                   </p>
@@ -549,7 +532,7 @@
             <!-- Key Routing & Scaling Simulator -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;" class="distribution-sim-grid">
               <div class="card">
-                <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">🎯 Single Key Routing Inspector</h4>
+                <h4 style="font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">Single Key Routing Inspector</h4>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Trace how any accession number or ISBN resolves to a storage node:</p>
                 <div class="form-group">
                   <input type="text" class="form-control" id="dist-route-input" placeholder="Type key (e.g. BK-100, 978-0132350884, MEM-001)...">
@@ -562,7 +545,7 @@
               </div>
 
               <div class="card">
-                <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">📈 Dynamic Node Scaling Simulation</h4>
+                <h4 style="font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; color: var(--text-main);">Dynamic Node Scaling Simulation</h4>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Simulate adding or removing a cluster node to verify minimal re-routing:</p>
                 <div class="form-row" style="margin-bottom: 10px;">
                   <div class="form-group" style="flex: 2;">
@@ -582,8 +565,8 @@
                   </div>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                  <button class="btn btn-primary btn-sm" style="flex: 2;" onclick="Distribution.runRebalanceSimulation()">🚀 Run Simulation</button>
-                  <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Distribution.runUniformityBenchmark()">⚡ 10k Bench</button>
+                  <button class="btn btn-primary btn-sm" style="flex: 2;" onclick="Distribution.runRebalanceSimulation()">Run Simulation</button>
+                  <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Distribution.runUniformityBenchmark()">Benchmark</button>
                 </div>
               </div>
             </div>
@@ -614,11 +597,11 @@
                 <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 12px;">Live Accession ID Generator</h4>
                 <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">Generate live unique entity identifiers with prefix classification:</p>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
-                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('book')">📖 Book (BK-)</button>
-                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('member')">👤 Member (MEM-)</button>
-                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('loan')">🔄 Loan (LN-)</button>
-                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('reservation')">⏳ Reservation (RES-)</button>
-                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('transaction')">💳 Fine Txn (TXN-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('book')">Book (BK-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('member')">Patron (MEM-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('loan')">Loan (LN-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('reservation')">Reservation (RES-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('transaction')">Transaction (TXN-)</button>
                 </div>
                 <div id="playground-result">
                   <div class="card-subtle-box" style="padding: 14px; border-radius: var(--radius-md); font-size: 0.82rem; color: var(--text-dim); text-align: center;">
@@ -648,7 +631,7 @@
                   </div>
                 </div>
                 <button class="btn btn-primary" id="btn-run-bench" onclick="Benchmark.runLiveBenchmark()" style="width: 100%;">
-                  🚀 Run Concurrent Benchmark
+                  Run Concurrent Benchmark
                 </button>
               </div>
             </div>
@@ -708,9 +691,9 @@
           <!-- Subtle Collapsible Search Telemetry (Preserves DOM IDs for discovery.js) -->
           <details class="card-subtle-box" style="margin-bottom: 24px; padding: 10px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
             <summary style="font-size: 0.82rem; font-weight: 600; color: var(--text-dim); cursor: pointer; user-select: none;">
-              ⚙️ Search Engine Telemetry & Cache Performance Metrics
+              Search Engine Telemetry & Cache Performance Metrics
             </summary>
-            <div id="stat-redis-status" style="display: none;">🟢 SEARCH INDEX ACTIVE</div>
+            <div id="stat-redis-status" style="display: none;">Search Index Active</div>
             <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-top: 14px; margin-bottom: 8px;">
               <div class="card stat-card" style="padding: 12px;">
                 <div class="stat-content">
@@ -749,7 +732,7 @@
             <!-- Title & Author Suggestions -->
             <div class="card">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 1.1rem; font-weight: 700;">⚡ Instant Title & Author Suggestions</h3>
+                <h3 style="font-size: 1.1rem; font-weight: 600;">Instant Title & Author Suggestions</h3>
                 <span id="discovery-trie-latency" style="font-size: 0.8rem; color: var(--text-muted);"></span>
               </div>
               <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
@@ -766,8 +749,8 @@
             <!-- Catalogue Keyword Search -->
             <div class="card">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 1.1rem; font-weight: 700;">🔍 Catalogue Keyword Search</h3>
-                <span id="discovery-cache-badge" class="badge-concept badge-redis" style="font-size: 0.75rem;">INDEX READY</span>
+                <h3 style="font-size: 1.1rem; font-weight: 600;">Catalogue Keyword Search</h3>
+                <span id="discovery-cache-badge" class="badge-concept badge-redis" style="font-size: 0.75rem;">Index Ready</span>
               </div>
               <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
                 Search across titles, descriptions, and categories with real-time stock availability filtering:
@@ -794,13 +777,13 @@
 
           <!-- Automated Catalog Metadata Ingestion / Crawler Panel -->
           <div class="card">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">🌐 Automated Catalog Metadata Ingestion</h3>
+            <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">Automated Catalog Metadata Ingestion</h3>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
               Harvests digital records from external repository sources, extracts volume metadata, and prepares items for cataloguing:
             </p>
             <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
               <input type="text" class="form-control" id="crawler-seed-url" value="http://localhost:8081/api/crawler/simulated-source?page=1" style="flex: 1; min-width: 260px;">
-              <button class="btn btn-primary" onclick="Discovery.runCrawler()">🚀 Ingest Remote Source</button>
+              <button class="btn btn-primary" onclick="Discovery.runCrawler()">Ingest Remote Source</button>
             </div>
             <div id="crawler-stats-container" style="display: none; margin-bottom: 16px;"></div>
             <div id="crawler-extracted-books"></div>
@@ -812,21 +795,20 @@
           <div class="view-header" style="margin-bottom: 24px;">
             <div>
               <div class="view-header-title">
-                <span class="view-header-icon">🔗</span>
                 <h2>Shareable Links & Access Gateway</h2>
               </div>
               <p class="view-header-subtitle">
                 Create and manage compact, shareable URLs for library books, reading lists, and direct resource links.
               </p>
             </div>
-            <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadShortLinks()">🔄 Refresh Table</button>
+            <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadShortLinks()">Refresh</button>
           </div>
 
           <!-- Shareable Link Generator Form -->
           <div class="card" style="margin-bottom: 28px;">
             <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
-              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                <span>✂️</span> Shareable Book Link Generator
+              <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">
+                Shareable Book Link Generator
               </h3>
             </div>
 
@@ -851,7 +833,7 @@
                 </div>
               </div>
 
-              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">⚡ Create Shareable Link</button>
+              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">Create Shareable Link</button>
             </form>
 
             <!-- Created Link Preview -->
@@ -862,14 +844,14 @@
           <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
               <div>
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                  <span>📋</span> Active Shareable Links & Access Analytics
+                <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">
+                  Active Shareable Links & Access Analytics
                 </h3>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
                   Shortened URLs automatically track patron clicks and record last access timestamps.
                 </p>
               </div>
-              <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadShortLinks()">🔄 Refresh Table</button>
+              <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadShortLinks()">Refresh</button>
             </div>
 
             <div class="table-responsive">
@@ -899,13 +881,12 @@
         <!-- ================= VIEW 7: STORAGE CLUSTER REDIRECT ================= -->
         <section id="view-distribution" class="view-section">
           <div class="card" style="text-align: center; padding: 48px 24px; max-width: 600px; margin: 40px auto;">
-            <div style="font-size: 3rem; margin-bottom: 12px;">🌐</div>
-            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;">Storage Infrastructure & Cluster Topology</h3>
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 8px;">Storage Infrastructure & Cluster Topology</h3>
             <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
               Database sharding topology and partition ring management tools are maintained in the Staff Administration panel.
             </p>
             <button class="btn btn-primary" onclick="Router.navigate('admin'); Admin.switchTab('storage');">
-              ⚙️ Open Storage Cluster in Staff Admin
+              Open Storage Cluster in Staff Admin
             </button>
           </div>
         </section>
@@ -913,13 +894,12 @@
         <!-- ================= VIEW 8: UNIVERSAL ID REGISTRY REDIRECT ================= -->
         <section id="view-benchmark" class="view-section">
           <div class="card" style="text-align: center; padding: 48px 24px; max-width: 600px; margin: 40px auto;">
-            <div style="font-size: 3rem; margin-bottom: 12px;">⚡</div>
-            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;">Accession & Barcode ID Registry</h3>
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 8px;">Accession & Barcode ID Registry</h3>
             <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
               Unique accession number generation and concurrent throughput benchmarks are managed in Staff Administration.
             </p>
             <button class="btn btn-primary" onclick="Router.navigate('admin'); Admin.switchTab('idgen');">
-              ⚙️ Open ID Registry in Staff Admin
+              Open ID Registry in Staff Admin
             </button>
           </div>
         </section>
@@ -929,8 +909,7 @@
           <div style="max-width: 440px; margin: 40px auto;">
             <div class="card">
               <div style="text-align: center; margin-bottom: 24px;">
-                <div style="font-size: 36px; margin-bottom: 8px;">🔐</div>
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Sign In to Library Portal</h2>
+                <h2 style="font-size: 1.4rem; font-weight: 600; color: var(--text-main);">Sign In</h2>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Enter your credentials to manage borrowed books and reservations.</p>
               </div>
 
@@ -969,9 +948,8 @@
           <div style="max-width: 480px; margin: 40px auto;">
             <div class="card">
               <div style="text-align: center; margin-bottom: 24px;">
-                <div style="font-size: 36px; margin-bottom: 8px;">📝</div>
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Patron Registration</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Join Apex Central Library to borrow books and access digital resources.</p>
+                <h2 style="font-size: 1.4rem; font-weight: 600; color: var(--text-main);">Patron Registration</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Join the library catalogue system to borrow books and access digital resources.</p>
               </div>
 
               <form onsubmit="event.preventDefault(); Auth.register(
@@ -1023,6 +1001,8 @@
         </section>
 
       </main>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1114,6 +1094,7 @@
 
   <!-- Scripts -->
   <script src="js/api.js"></script>
+  <script src="js/bookCovers.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/books.js"></script>
   <script src="js/member.js"></script>

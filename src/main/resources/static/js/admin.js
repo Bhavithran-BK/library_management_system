@@ -53,8 +53,8 @@ const Admin = {
               <td><strong>${b.availableCopies}</strong> / ${b.totalCopies}</td>
               <td>
                 <div style="display: flex; gap: 8px;">
-                  <button class="btn btn-outline btn-sm" onclick="Admin.openEditBookModal('${b.bookId}')">✏️ Edit</button>
-                  <button class="btn btn-danger btn-sm" onclick="Admin.deleteBook('${b.bookId}', '${b.title.replace(/'/g, "\\'")}')">🗑️ Delete</button>
+                  <button class="btn btn-outline btn-sm" onclick="Admin.openEditBookModal('${b.bookId}')">Edit</button>
+                  <button class="btn btn-danger btn-sm" onclick="Admin.deleteBook('${b.bookId}', '${b.title.replace(/'/g, "\\'")}')">Delete</button>
                 </div>
               </td>
             </tr>
