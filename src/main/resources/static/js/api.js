@@ -16,6 +16,16 @@ const API = {
     }
   },
 
+  escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  },
+
   async request(endpoint, options = {}) {
     const url = this.baseUrl + endpoint;
     const headers = {
@@ -29,11 +39,17 @@ const API = {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
+    const controller = new AbortController();
+    const timeout = options.timeout || 8000;
+    const timer = setTimeout(() => controller.abort(), timeout);
+
     try {
       const response = await fetch(url, {
         ...options,
-        headers
+        headers,
+        signal: options.signal || controller.signal
       });
+      clearTimeout(timer);
 
       const data = await response.json().catch(() => null);
 
@@ -48,6 +64,12 @@ const API = {
 
       return data;
     } catch (err) {
+      clearTimeout(timer);
+      if (err.name === 'AbortError') {
+        const timeoutErr = new Error(`Request timed out after ${timeout / 1000}s. The backend server might be offline or still starting up.`);
+        console.error(`API Timeout [${endpoint}]:`, timeoutErr);
+        throw timeoutErr;
+      }
       console.error(`API Error [${endpoint}]:`, err);
       throw err;
     }

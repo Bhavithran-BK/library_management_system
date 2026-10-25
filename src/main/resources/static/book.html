@@ -356,39 +356,76 @@
       shortLink: null,
 
       async init() {
-        Auth.init();
-        this.renderAuthNav();
+        try {
+          try {
+            Auth.init();
+          } catch (e) {
+            console.warn('Auth init error:', e);
+          }
+          this.renderAuthNav();
 
-        const params = new URLSearchParams(window.location.search);
-        const bookId = params.get('id');
+          const params = new URLSearchParams(window.location.search);
+          const bookId = params.get('id');
 
-        if (!bookId) {
-          document.getElementById('book-loading-state').innerHTML = `
-            <div style="color: var(--danger);">
-              <h3>No Book Identifier Specified</h3>
-              <p style="margin-top: 8px;">Please select a book from the <a href="/index.html#catalogue" style="color: var(--primary-600);">library catalogue</a>.</p>
-            </div>
-          `;
-          return;
+          if (!bookId || !bookId.trim()) {
+            document.getElementById('book-loading-state').innerHTML = `
+              <div style="padding: 20px 0;">
+                <h3 style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--text-main); margin-bottom: 8px;">No Book Identifier Specified</h3>
+                <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 20px; font-size: 0.95rem;">
+                  Please select a book from the catalogue or pick one of the sample titles below:
+                </p>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;">
+                  <a href="/book.html?id=BK-100" class="btn btn-outline btn-sm">The Pragmatic Programmer (BK-100)</a>
+                  <a href="/book.html?id=BK-101" class="btn btn-outline btn-sm">Clean Architecture (BK-101)</a>
+                  <a href="/book.html?id=BK-102" class="btn btn-outline btn-sm">Designing Data-Intensive Apps (BK-102)</a>
+                </div>
+                <a href="/index.html#catalogue" class="btn btn-primary btn-sm">← Browse Full Catalogue</a>
+              </div>
+            `;
+            return;
+          }
+
+          await this.loadBook(bookId.trim());
+        } catch (globalErr) {
+          console.error('Fatal initialization error:', globalErr);
+          const loadingEl = document.getElementById('book-loading-state');
+          if (loadingEl) {
+            loadingEl.innerHTML = `
+              <div style="padding: 20px 0;">
+                <h3 style="color: var(--danger); font-family: var(--font-serif); font-size: 1.4rem;">Initialization Issue</h3>
+                <p style="margin-top: 8px; color: var(--text-muted); font-size: 0.92rem;">${API.escapeHtml(globalErr.message)}</p>
+                <a href="/index.html#catalogue" class="btn btn-outline btn-sm" style="margin-top: 14px;">Return to Catalogue</a>
+              </div>
+            `;
+          }
         }
-
-        await this.loadBook(bookId);
       },
 
       renderAuthNav() {
         const navEl = document.getElementById('auth-nav-status');
         if (!navEl) return;
-        if (Auth.isLoggedIn()) {
-          navEl.innerHTML = `
-            <span class="user-role-badge" style="font-size: 0.75rem;">${Auth.getRole()}</span>
-            <span style="font-size: 0.82rem; color: var(--text-muted);">${Auth.getMemberName() || Auth.getMemberId()}</span>
-            <button class="btn btn-outline btn-sm" onclick="Auth.logout(); window.location.reload();">Sign Out</button>
-          `;
-        } else {
-          navEl.innerHTML = `
-            <a href="/index.html#login" class="btn btn-primary btn-sm">Sign In</a>
-          `;
+        try {
+          if (Auth && Auth.isLoggedIn && Auth.isLoggedIn()) {
+            const role = (Auth.getRole && Auth.getRole()) || Auth.currentUser?.role || 'MEMBER';
+            const name = (Auth.getMemberName && Auth.getMemberName()) || Auth.currentUser?.name || Auth.currentUser?.email || 'User';
+            navEl.innerHTML = `
+              <span class="user-role-badge" style="font-size: 0.75rem;">${API.escapeHtml(role)}</span>
+              <span style="font-size: 0.82rem; color: var(--text-muted);">${API.escapeHtml(name)}</span>
+              <button class="btn btn-outline btn-sm" onclick="BookDetailPage.handleLogout()">Sign Out</button>
+            `;
+          } else {
+            navEl.innerHTML = `
+              <a href="/index.html#login" class="btn btn-primary btn-sm">Sign In</a>
+            `;
+          }
+        } catch (e) {
+          console.warn('renderAuthNav error:', e);
         }
+      },
+
+      handleLogout() {
+        Auth.logout();
+        window.location.reload();
       },
 
       async loadBook(bookId) {
@@ -409,13 +446,22 @@
           // Trace consistent hash route
           this.loadStorageRoute(bookId);
         } catch (err) {
-          document.getElementById('book-loading-state').innerHTML = `
-            <div style="color: var(--danger);">
-              <h3>Unable to Load Book Record</h3>
-              <p style="margin-top: 8px;">${API.escapeHtml(err.message)}</p>
-              <a href="/index.html#catalogue" class="btn btn-outline btn-sm" style="margin-top: 14px;">Return to Catalogue</a>
-            </div>
-          `;
+          const loadingEl = document.getElementById('book-loading-state');
+          if (loadingEl) {
+            loadingEl.innerHTML = `
+              <div style="padding: 20px 0;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">📚</div>
+                <h3 style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--text-main); margin-bottom: 8px;">Unable to Load Book Record</h3>
+                <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 18px; font-size: 0.92rem;">
+                  ${API.escapeHtml(err.message || 'The server could not find or return the requested accession record.')}
+                </p>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                  <button class="btn btn-primary btn-sm" onclick="window.location.reload()">Retry Connection</button>
+                  <a href="/index.html#catalogue" class="btn btn-outline btn-sm">Return to Catalogue</a>
+                </div>
+              </div>
+            `;
+          }
         }
       },
 

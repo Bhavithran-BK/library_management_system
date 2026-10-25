@@ -28,6 +28,14 @@ const Auth = {
     return this.currentUser ? this.currentUser.memberId : null;
   },
 
+  getRole() {
+    return this.currentUser ? this.currentUser.role : null;
+  },
+
+  getMemberName() {
+    return this.currentUser ? (this.currentUser.name || this.currentUser.email) : null;
+  },
+
   async login(email, password) {
     try {
       const res = await API.post('/api/auth/login', { email, password });
@@ -81,8 +89,12 @@ const Auth = {
     this.currentUser = null;
     localStorage.removeItem('lms_user');
     this.updateUI();
-    API.toast('Logged out successfully', 'info');
-    Router.navigate('login');
+    if (typeof API !== 'undefined' && API.toast) {
+      API.toast('Logged out successfully', 'info');
+    }
+    if (typeof Router !== 'undefined' && Router.navigate) {
+      Router.navigate('login');
+    }
   },
 
   handleUnauthorized() {
