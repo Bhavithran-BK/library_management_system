@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Design Simulation & Evaluation | Member 4</title>
+  <meta name="description" content="Interactive verification and demonstration suite for Member 4: Distributed Token Bucket Rate Limiter, Base62 URL Shortener, and System Performance Evaluation.">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Simulation Dashboard Specific Glassmorphism Styles */
+    .sim-navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+      padding: 12px 24px;
+    }
+    .sim-nav-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .sim-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+    .sim-hero {
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(2, 132, 199, 0.06) 100%);
+      border: 1px solid rgba(79, 70, 229, 0.18);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .sim-hero::after {
+      content: '⚡ MEMBER 4';
+      position: absolute;
+      right: 20px;
+      bottom: -10px;
+      font-size: 4.5rem;
+      font-weight: 900;
+      color: rgba(79, 70, 229, 0.04);
+      pointer-events: none;
+      font-family: var(--font-mono);
+    }
+    .tank-gauge-container {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .tank-gauge-track {
+      background: rgba(226, 232, 240, 0.8);
+      border-radius: 999px;
+      height: 18px;
+      overflow: hidden;
+      position: relative;
+      margin: 12px 0 8px;
+    }
+    .tank-gauge-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #059669 0%, #10B981 60%, #4F46E5 100%);
+      border-radius: 999px;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+    }
+    .tank-gauge-fill.low {
+      background: linear-gradient(90deg, #DC2626 0%, #F59E0B 100%) !important;
+    }
+    .persona-chip {
+      cursor: pointer;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      background: #FFFFFF;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .persona-chip:hover {
+      border-color: var(--primary-500);
+      color: var(--primary-600);
+      transform: translateY(-1px);
+    }
+    .persona-chip.active {
+      background: var(--primary-50);
+      border-color: var(--primary-500);
+      color: var(--primary-700);
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+    }
+    .burst-sample-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+    .burst-sample-item.allowed {
+      background: rgba(5, 150, 105, 0.08);
+      border-left: 3px solid #059669;
+      color: #065F46;
+    }
+    .burst-sample-item.throttled {
+      background: rgba(220, 38, 38, 0.08);
+      border-left: 3px solid #DC2626;
+      color: #991B1B;
+    }
+    .header-code-pill {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: rgba(15, 23, 42, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-main);
+    }
+    .side-by-side-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .side-by-side-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Glass Navigation Bar -->
+  <header class="sim-navbar">
+    <div class="sim-nav-container">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-size: 1.8rem;">🏛️</span>
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h1 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin: 0;">Apex Central Library</h1>
+            <span class="status-pill active" style="font-size: 0.68rem; padding: 2px 8px;">MEMBER 4 LAB SUITE</span>
+          </div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Distributed Rate Limiting, Base62 URL Shortener & System Evaluation</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="global-redis-badge" class="status-pill active">🟢 REDIS LUA ENGINE READY</span>
+        <button class="btn btn-outline btn-sm" onclick="SimApp.resetAllGlobal()" title="Reset all Redis rate keys and counters">
+          🔄 Reset All Limits
+        </button>
+        <a href="/" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+          <span>🏛️</span> Return to Library Portal
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="sim-container">
+
+    <!-- Hero Architecture Context -->
+    <div class="sim-hero">
+      <div style="max-width: 900px;">
+        <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(79, 70, 229, 0.12); color: var(--primary-600); font-size: 0.76rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; margin-bottom: 12px; text-transform: uppercase;">
+          System Design Lab &bull; Engineering Verification
+        </div>
+        <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.3;">
+          Distributed Token Bucket Rate Limiter & URL Shortener
+        </h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 18px;">
+          This dedicated suite evaluates Member 4 deliverables without polluting public patron workflows. Test 
+          <strong>atomic Redis Lua scripts</strong>, <strong>per-client token isolation</strong>, 
+          <strong>instant HTTP 429 throttling</strong> with RFC headers, and <strong>dual-tier Base62 redirects</strong>.
+        </p>
+
+        <!-- Quick Jump Pills -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <a href="#section-token-bucket" class="persona-chip" style="text-decoration: none;">⚡ Token Bucket & Burst</a>
+          <a href="#section-per-user-isolation" class="persona-chip" style="text-decoration: none;">👥 Per-User Isolation</a>
+          <a href="#section-live-api-probe" class="persona-chip" style="text-decoration: none;">🔍 Live API Header Probe</a>
+          <a href="#section-url-shortener" class="persona-chip" style="text-decoration: none;">🔗 Base62 URL Shortener</a>
+          <a href="#section-performance-eval" class="persona-chip" style="text-decoration: none;">📊 Stress Tests & Metrics</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 1: PER-CLIENT TOKEN BUCKET & BURST SIMULATOR ================= -->
+    <section id="section-token-bucket" style="margin-bottom: 40px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+            <span>⚡</span> Workstream 1: Distributed Token Bucket Traffic Simulation
+          </h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Bucket Capacity $C = 100$, Refill Rate $r = 10\text{ tokens/sec}$ backed by atomic Redis Lua execution.
+          </p>
+        </div>
+      </div>
+
+      <!-- Persona Selector Bar -->
+      <div class="card" style="margin-bottom: 24px; padding: 18px 24px;">
+        <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Select Simulated Client Persona (Each has an Independent Token Bucket):
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+          <button class="persona-chip active" data-client="alice@example.com" onclick="SimApp.selectClient('alice@example.com', this)">
+            <span>👤</span> Patron Alice (<code>alice@example.com</code>)
+          </button>
+          <button class="persona-chip" data-client="bob@example.com" onclick="SimApp.selectClient('bob@example.com', this)">
+            <span>👤</span> Patron Bob (<code>bob@example.com</code>)
+          </button>
+          <button class="persona-chip" data-client="admin@library.com" onclick="SimApp.selectClient('admin@library.com', this)">
+            <span>🛡️</span> Staff Admin (<code>admin@library.com</code>)
+          </button>
+          <button class="persona-chip" data-client="ip:198.51.100.22" onclick="SimApp.selectClient('ip:198.51.100.22', this)">
+            <span>🤖</span> Crawler Bot (<code>ip:198.51.100.22</code>)
+          </button>
+
+          <!-- Custom Client Input -->
+          <div style="display: inline-flex; align-items: center; gap: 6px; margin-left: auto;">
+            <input type="text" class="form-control" id="custom-client-input" placeholder="Custom ID (e.g. user-42)" style="font-size: 0.82rem; width: 170px; padding: 6px 10px; font-family: var(--font-mono);">
+            <button class="btn btn-outline btn-sm" onclick="SimApp.applyCustomClient()">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Token Bucket Visualizer & Controls Grid -->
+      <div class="side-by-side-grid" style="margin-bottom: 24px;">
+        
+        <!-- Left: Live Tank Gauge & Status -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+            <div>
+              <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">
+                Active Bucket: <span id="current-client-label" style="color: var(--primary-600); font-family: var(--font-mono);">alice@example.com</span>
+              </h4>
+              <span style="font-size: 0.78rem; color: var(--text-muted);">Redis Key: <code id="current-redis-key" style="color: var(--primary-600);">rate:sim:alice@example.com</code></span>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="SimApp.refreshClientStatus()">🔄 Refresh</button>
+          </div>
+
+          <!-- Token Tank Visual Gauge -->
+          <div class="tank-gauge-container">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700;">
+              <span>Token Balance:</span>
+              <span id="gauge-tokens-text" style="color: var(--primary-600); font-family: var(--font-mono);">100 / 100 Tokens</span>
+            </div>
+            <div class="tank-gauge-track">
+              <div id="tank-gauge-fill" class="tank-gauge-fill" style="width: 100%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
+              <span>0 (Empty - 429)</span>
+              <span>Refill: +10 tokens / sec</span>
+              <span>100 (Full Capacity)</span>
+            </div>
+          </div>
+
+          <!-- Bucket Metric Grid -->
+          <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 16px;">
+            <div class="card stat-card" style="padding: 12px;">
+              <div class="stat-content">
+                <div class="metric-highlight" id="stat-capacity" style="font-size: 1.25rem;">100</div>
+                <p style="font-size: 0.75rem;">Capacity Limit</p>
+              </div>
+            </div>
+            <div class="card stat-card" style="padding: 12px;">
+              <div class="stat-content">
+                <div class="metric-highlight" id="stat-refill-rate" style="font-size: 1.25rem; color: #D97706;">10 / s</div>
+                <p style="font-size: 0.75rem;">Replenishment</p>
+              </div>
+            </div>
+            <div class="card stat-card" style="padding: 12px;">
+              <div class="stat-content">
+                <div class="metric-highlight" id="stat-status-pill" style="font-size: 1rem; color: var(--success);">ALLOWED</div>
+                <p style="font-size: 0.75rem;">Current State</p>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-outline btn-sm" style="width: 100%;" onclick="SimApp.resetCurrentClient()">
+            🔄 Reset <span id="reset-client-name">alice@example.com</span>'s Bucket
+          </button>
+        </div>
+
+        <!-- Right: Burst Traffic Simulation Trigger -->
+        <div class="card">
+          <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+            <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">⚡ Burst Traffic Load Generator</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">
+              Fire rapid concurrent requests to test token depletion and verify that excess calls return <code>429 Too Many Requests</code>.
+            </p>
+          </div>
+
+          <div style="margin-bottom: 18px;">
+            <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 8px;">
+              Choose Request Burst Preset:
+            </label>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px;">
+              <button class="btn btn-outline btn-sm" onclick="SimApp.runBurst(20)">20 Reqs (Safe)</button>
+              <button class="btn btn-outline btn-sm" onclick="SimApp.runBurst(50)">50 Reqs (Half Tank)</button>
+              <button class="btn btn-outline btn-sm" onclick="SimApp.runBurst(100)">100 Reqs (Capacity)</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn btn-primary btn-sm" onclick="SimApp.runBurst(120)" style="font-weight: 700; background: linear-gradient(135deg, #4F46E5, #0284C7);">
+                ⚡ 120 Reqs (Burst Stress)
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="SimApp.runBurst(150)" style="color: var(--danger); border-color: rgba(220, 38, 38, 0.4);">
+                🔥 150 Reqs (Abusive Spike)
+              </button>
+            </div>
+          </div>
+
+          <!-- Burst Results Summary Panel -->
+          <div id="burst-results-panel" style="display: none; background: var(--bg-card-subtle); border-radius: var(--radius-md); padding: 14px; border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <strong style="font-size: 0.86rem; color: var(--text-main);">Simulation Execution Outcome:</strong>
+              <span id="burst-badge" class="status-pill active" style="font-size: 0.72rem;">COMPLETE</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; text-align: center;">
+              <div style="background: rgba(255,255,255,0.85); padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Total Sent</span>
+                <strong id="burst-total-sent" style="font-size: 1.15rem; color: var(--text-main);">-</strong>
+              </div>
+              <div style="background: rgba(5, 150, 105, 0.08); padding: 8px; border-radius: var(--radius-sm); border: 1px solid rgba(5, 150, 105, 0.2);">
+                <span style="font-size: 0.72rem; color: var(--success); display: block;">Allowed (200)</span>
+                <strong id="burst-allowed-count" style="font-size: 1.15rem; color: var(--success);">-</strong>
+              </div>
+              <div style="background: rgba(220, 38, 38, 0.08); padding: 8px; border-radius: var(--radius-sm); border: 1px solid rgba(220, 38, 38, 0.2);">
+                <span style="font-size: 0.72rem; color: var(--danger); display: block;">Throttled (429)</span>
+                <strong id="burst-rejected-count" style="font-size: 1.15rem; color: var(--danger);">-</strong>
+              </div>
+            </div>
+
+            <!-- RFC Header Inspection Box -->
+            <div style="font-size: 0.78rem; line-height: 1.6; margin-bottom: 10px; padding: 8px 12px; background: #FFFFFF; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <div>Limit Header: <span class="header-code-pill">X-RateLimit-Limit: <strong id="header-limit">100</strong></span></div>
+              <div>Remaining Header: <span class="header-code-pill">X-RateLimit-Remaining: <strong id="header-remaining">0</strong></span></div>
+              <div>Retry Interval: <span class="header-code-pill">Retry-After: <strong id="header-retry-after">1</strong>s</span></div>
+            </div>
+
+            <!-- Sample Breakpoint Points -->
+            <div style="font-size: 0.78rem; font-weight: 700; margin-bottom: 6px; color: var(--text-muted);">
+              Request Tipping-Point Timeline:
+            </div>
+            <div id="burst-samples-container" style="max-height: 140px; overflow-y: auto;"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= SECTION 2: PER-USER ISOLATION PROOF (SIDE-BY-SIDE) ================= -->
+    <section id="section-per-user-isolation" style="margin-bottom: 40px;">
+      <div style="margin-bottom: 16px;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+          <span>👥</span> Live Verification: Per-User Rate Limit Isolation (No Cross-Contamination)
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Demonstrates that an abusive client depleting their bucket receives HTTP 429 without degrading another patron's capacity.
+        </p>
+      </div>
+
+      <div class="card" style="padding: 24px;">
+        <div class="side-by-side-grid">
+          
+          <!-- Box A: Alice (Spammer) -->
+          <div style="background: rgba(220, 38, 38, 0.03); border: 1px solid rgba(220, 38, 38, 0.2); border-radius: var(--radius-lg); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div>
+                <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-main);">👤 Patron Alice</h4>
+                <code style="font-size: 0.76rem; color: var(--text-muted);">rate:sim:alice@example.com</code>
+              </div>
+              <span id="iso-alice-badge" class="status-pill active" style="font-size: 0.72rem;">ACTIVE</span>
+            </div>
+
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
+              Simulate Alice spamming 120 rapid requests to exhaust her bucket:
+            </p>
+
+            <button class="btn btn-outline btn-sm" id="btn-deplete-alice" onclick="SimApp.demoIsolationDepleteAlice()" style="width: 100%; border-color: var(--danger); color: var(--danger); font-weight: 700; margin-bottom: 12px;">
+              💥 Deplete Alice's Tokens (120 Burst)
+            </button>
+
+            <div style="font-size: 0.82rem; font-family: var(--font-mono); background: #FFFFFF; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <div>Remaining: <strong id="iso-alice-tokens" style="color: var(--primary-600);">100 / 100</strong></div>
+              <div>Status: <span id="iso-alice-status" style="color: var(--success); font-weight: 700;">200 OK</span></div>
+            </div>
+          </div>
+
+          <!-- Box B: Bob (Normal Patron) -->
+          <div style="background: rgba(5, 150, 105, 0.03); border: 1px solid rgba(5, 150, 105, 0.2); border-radius: var(--radius-lg); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div>
+                <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-main);">👤 Patron Bob</h4>
+                <code style="font-size: 0.76rem; color: var(--text-muted);">rate:sim:bob@example.com</code>
+              </div>
+              <span id="iso-bob-badge" class="status-pill active" style="font-size: 0.72rem;">HEALTHY</span>
+            </div>
+
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
+              Verify that Bob still has full token capacity despite Alice's burst:
+            </p>
+
+            <button class="btn btn-outline btn-sm" id="btn-check-bob" onclick="SimApp.demoIsolationCheckBob()" style="width: 100%; border-color: var(--success); color: var(--success); font-weight: 700; margin-bottom: 12px;">
+              🔍 Probe Bob's Status (Safe Check)
+            </button>
+
+            <div style="font-size: 0.82rem; font-family: var(--font-mono); background: #FFFFFF; padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+              <div>Remaining: <strong id="iso-bob-tokens" style="color: var(--success);">100 / 100</strong></div>
+              <div>Status: <span id="iso-bob-status" style="color: var(--success); font-weight: 700;">200 OK (UNTOUCHED)</span></div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 18px; padding: 12px 16px; background: rgba(79, 70, 229, 0.06); border-radius: var(--radius-md); border-left: 4px solid var(--primary-600); font-size: 0.84rem; color: var(--text-main);">
+          💡 <strong>System Design Note:</strong> The token bucket keys are partitioned per user identifier in Redis. This guarantees that traffic spikes from abusive bots or aggressive patrons are strictly throttled at the client key level without causing cascade denial-of-service to legitimate library members.
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 3: LIVE REAL API PROBE ================= -->
+    <section id="section-live-api-probe" style="margin-bottom: 40px;">
+      <div style="margin-bottom: 16px;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+          <span>🔍</span> Workstream 1: Live Real API Probe & Interceptor Inspection
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Fires real browser <code>fetch()</code> requests to Spring's <code>/api/books</code> and extracts the actual RFC rate limit response headers.
+        </p>
+      </div>
+
+      <div class="card" style="padding: 24px;">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+          <button class="btn btn-primary btn-sm" onclick="SimApp.probeRealApi()">
+            🚀 Probe GET /api/books (Single Request)
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="SimApp.probeRealApi(10)">
+            ⚡ Rapid Fire 10 Requests to /api/books
+          </button>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">
+            Calls live Spring <code>RateLimitInterceptor</code> handler.
+          </span>
+        </div>
+
+        <!-- Raw Probe Inspection Box -->
+        <div style="background: #0F172A; color: #E2E8F0; border-radius: var(--radius-md); padding: 16px; font-family: var(--font-mono); font-size: 0.82rem; overflow-x: auto;">
+          <div style="color: #94A3B8; margin-bottom: 8px;">// Real HTTP Response Header Inspector:</div>
+          <div id="live-probe-output" style="white-space: pre-wrap;">Click "Probe GET /api/books" above to inspect real-time response headers...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 4: BASE62 URL SHORTENER ================= -->
+    <section id="section-url-shortener" style="margin-bottom: 40px;">
+      <div style="margin-bottom: 16px;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+          <span>🔗</span> Workstream 2: Base62 URL Shortener & Dual-Tier Persistence
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Sub-millisecond redirects accelerated by Redis Tier-1 cache + durable MongoDB analytics.
+        </p>
+      </div>
+
+      <!-- Base62 Bijective Encoder Card -->
+      <div class="card" style="margin-bottom: 24px; padding: 20px;">
+        <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+          🔢 Base62 Bijective Character Encoder (<code>[0-9a-zA-Z]</code>)
+        </h4>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
+          Type any integer ID to see its deterministic Base62 encoding without padding or collisions:
+        </p>
+
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.82rem; font-weight: 600;">Number ID:</label>
+            <input type="number" class="form-control" id="b62-input-val" value="100042" style="width: 160px; font-family: var(--font-mono); font-size: 0.85rem;" oninput="SimApp.updateBase62Live()">
+          </div>
+          <span style="font-size: 1.2rem; color: var(--text-muted);">➜</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 0.82rem; font-weight: 600;">Base62 Short Code:</label>
+            <span class="header-code-pill" id="b62-output-code" style="font-size: 1.05rem; font-weight: 700; color: var(--primary-600); padding: 4px 10px;">q0w</span>
+          </div>
+          <div style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted);">
+            Examples: 
+            <a href="javascript:void(0)" onclick="SimApp.setB62(1)" style="color: var(--primary-600);">1 &rarr; 1</a> &bull; 
+            <a href="javascript:void(0)" onclick="SimApp.setB62(61)" style="color: var(--primary-600);">61 &rarr; Z</a> &bull; 
+            <a href="javascript:void(0)" onclick="SimApp.setB62(62)" style="color: var(--primary-600);">62 &rarr; 10</a> &bull; 
+            <a href="javascript:void(0)" onclick="SimApp.setB62(999999)" style="color: var(--primary-600);">999,999 &rarr; 4c91</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Short Link Form & Links Table -->
+      <div class="card" style="padding: 24px; margin-bottom: 24px;">
+        <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+          ✂️ Generate Book Short Link (<code>POST /api/short-links</code>)
+        </h4>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">
+          Create a shareable `/s/{code}` link pointing to catalogue books or search paths:
+        </p>
+
+        <form onsubmit="SimApp.createShortLink(event)" style="margin-bottom: 24px;">
+          <div class="form-row" style="margin-bottom: 12px;">
+            <div class="form-group" style="flex: 2;">
+              <label style="font-size: 0.82rem; font-weight: 600;">Target Path / URL</label>
+              <input type="text" class="form-control" id="sim-target-url" required value="http://localhost:8081/#catalogue?id=BK-1001" style="font-family: var(--font-mono); font-size: 0.85rem;">
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label style="font-size: 0.82rem; font-weight: 600;">Book ID</label>
+              <input type="text" class="form-control" id="sim-book-id" value="BK-1001" style="font-family: var(--font-mono); font-size: 0.85rem;">
+            </div>
+            <div class="form-group" style="flex: 2;">
+              <label style="font-size: 0.82rem; font-weight: 600;">Title</label>
+              <input type="text" class="form-control" id="sim-book-title" value="Clean Code Architecture">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm" style="padding: 10px 20px;">
+            ⚡ Generate Short URL & Warm Redis Tier
+          </button>
+        </form>
+
+        <!-- Active Short Links Table -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px; margin-bottom: 12px;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main);">
+            📋 Active Short Links with Dual-Tier Persistence (Redis + MongoDB)
+          </h4>
+          <button class="btn btn-outline btn-sm" onclick="SimApp.loadShortLinks()">🔄 Refresh Table</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Short URL (Redirect)</th>
+                <th>Destination Target</th>
+                <th>Storage Strategy</th>
+                <th>Clicks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="sim-shortlinks-table-body">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 16px;">Loading short links...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 5: PERFORMANCE EVALUATION & STRESS SCENARIOS ================= -->
+    <section id="section-performance-eval" style="margin-bottom: 40px;">
+      <div style="margin-bottom: 16px;">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+          <span>📊</span> Workstream 3: System Performance & Stress Scenarios (JMeter & Postman)
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Pre-configured benchmark profiles evaluating throughput, cache hit ratios, and rate limiting resilience.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px;">
+        
+        <!-- Scenario 1 Card -->
+        <div class="card" style="border-top: 4px solid var(--success);">
+          <div style="font-size: 0.76rem; font-weight: 700; color: var(--success); text-transform: uppercase; margin-bottom: 4px;">Scenario 1</div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">Low Load (Baseline)</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+            10 concurrent threads, 100 requests targeting <code>/api/search</code> and <code>/s/{code}</code>.
+          </p>
+          <div style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-muted); line-height: 1.7; margin-bottom: 14px;">
+            <div>&bull; Concurrency: 10 threads</div>
+            <div>&bull; Target: p95 latency &lt; 15ms</div>
+            <div>&bull; Cache Hit Ratio: 100%</div>
+            <div>&bull; Error Rate: 0.0%</div>
+          </div>
+          <button class="btn btn-outline btn-sm" style="width: 100%;" onclick="SimApp.runScenarioProbe(1)">
+            Run Scenario 1 Probe (10 Reqs)
+          </button>
+        </div>
+
+        <!-- Scenario 2 Card -->
+        <div class="card" style="border-top: 4px solid #D97706;">
+          <div style="font-size: 0.76rem; font-weight: 700; color: #D97706; text-transform: uppercase; margin-bottom: 4px;">Scenario 2</div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">Medium Load (Sustained)</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+            50 concurrent threads, 1,000 requests targeting Trie autocomplete and short link creation.
+          </p>
+          <div style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-muted); line-height: 1.7; margin-bottom: 14px;">
+            <div>&bull; Concurrency: 50 threads</div>
+            <div>&bull; Autocomplete: &lt; 5ms (Trie)</div>
+            <div>&bull; Hit Ratio: &gt; 80% (Redis)</div>
+            <div>&bull; Error Rate: 0.0%</div>
+          </div>
+          <button class="btn btn-outline btn-sm" style="width: 100%;" onclick="SimApp.runScenarioProbe(2)">
+            Run Scenario 2 Probe (25 Reqs)
+          </button>
+        </div>
+
+        <!-- Scenario 3 Card -->
+        <div class="card" style="border-top: 4px solid var(--danger);">
+          <div style="font-size: 0.76rem; font-weight: 700; color: var(--danger); text-transform: uppercase; margin-bottom: 4px;">Scenario 3</div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">High Load (Rate Limit Stress)</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+            150 concurrent threads, 3,000 requests in sudden bursts.
+          </p>
+          <div style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-muted); line-height: 1.7; margin-bottom: 14px;">
+            <div>&bull; Concurrency: 150 threads</div>
+            <div>&bull; First 100 Reqs: 200 OK</div>
+            <div>&bull; Excess Reqs: 429 Throttled</div>
+            <div>&bull; DB Crashes: 0 (Protected)</div>
+          </div>
+          <button class="btn btn-outline btn-sm" style="width: 100%; border-color: var(--danger); color: var(--danger);" onclick="SimApp.runBurst(120)">
+            Trigger Rate Limit Stress (120 Reqs)
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Test File Reference Box -->
+      <div class="card" style="background: var(--bg-card-subtle); padding: 18px 24px; border: 1px solid var(--border-color);">
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">
+          📂 Pre-Configured Test Suite Files in Project Repository:
+        </h4>
+        <ul style="font-size: 0.83rem; color: var(--text-muted); line-height: 1.8; margin-left: 20px;">
+          <li>
+            <strong>Apache JMeter Test Plan:</strong> 
+            <code>jmeter/Member4_System_Evaluation_StressTest.jmx</code> (Run via <code>jmeter -n -t ...</code>)
+          </li>
+          <li>
+            <strong>Postman Collection:</strong> 
+            <code>postman/Library_Management_System_Member4_Evaluation.postman_collection.json</code> (Run via Postman Collection Runner)
+          </li>
+          <li>
+            <strong>Automated JUnit Suite:</strong> 
+            <code>RateLimiterTest.java</code> and <code>Base62ShortLinkTest.java</code> (Run via <code>mvn test</code>)
+          </li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast Container -->
+  <div id="sim-toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px;"></div>
+
+  <script src="js/simulation.js"></script>
+</body>
+</html>

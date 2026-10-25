@@ -43,7 +43,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Static web pages and assets
-                .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
+                .requestMatchers("/", "/index.html", "/simulation.html", "/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
                 // Authentication endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 // Public book catalogue browsing

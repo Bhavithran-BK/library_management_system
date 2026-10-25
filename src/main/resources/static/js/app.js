@@ -29,7 +29,13 @@ const Router = {
     } else if (viewName === 'discovery') {
       Discovery.init();
     } else if (viewName === 'distribution') {
-      Distribution.init();
+      this.navigate('admin');
+      Admin.switchTab('storage');
+      return;
+    } else if (viewName === 'benchmark') {
+      this.navigate('admin');
+      Admin.switchTab('idgen');
+      return;
     } else if (viewName === 'shortlinks') {
       ShortLinksUI.init();
     }
@@ -56,8 +62,16 @@ const App = {
     // Setup navigation items
     document.querySelectorAll('.nav-item').forEach(btn => {
       btn.addEventListener('click', (e) => {
+        const href = btn.getAttribute('href');
+        if (href && !btn.dataset.view) {
+          return; // Allow direct link navigation for standalone pages like /simulation.html
+        }
         e.preventDefault();
         const view = btn.dataset.view;
+        if (view === 'simulation') {
+          window.location.href = '/simulation.html';
+          return;
+        }
         if (view) Router.navigate(view);
       });
     });
@@ -78,8 +92,8 @@ const App = {
       if (e.key === 'Escape') this.closeAllModals();
     });
 
-    // Initial View
-    Router.navigate('dashboard');
+    // Initial View: Book Catalogue
+    Router.navigate('catalogue');
   },
 
   initNavbar() {
@@ -88,13 +102,8 @@ const App = {
     const peekPill = document.getElementById('nav-peek-indicator');
     const pinBtn = document.getElementById('btn-pin-nav');
 
-    // Load persisted pin preference (default to unpinned / auto-hide)
-    const storedPin = localStorage.getItem('lms_nav_pinned');
-    if (storedPin === 'true') {
-      this.setNavPinned(true);
-    } else {
-      this.setNavPinned(false);
-    }
+    // Default to hover-to-reveal (unpinned) as requested
+    this.setNavPinned(false);
 
     // Hover-to-reveal event handlers
     const showNav = () => {
@@ -103,6 +112,7 @@ const App = {
         this.navLeaveTimer = null;
       }
       topNav?.classList.add('nav-revealed');
+      peekPill?.classList.add('nav-open');
     };
 
     const scheduleHideNav = () => {
@@ -110,18 +120,20 @@ const App = {
       if (this.navLeaveTimer) clearTimeout(this.navLeaveTimer);
       this.navLeaveTimer = setTimeout(() => {
         topNav?.classList.remove('nav-revealed');
-      }, 250); // smooth 250ms debounce
+        peekPill?.classList.remove('nav-open');
+      }, 350); // gentle 350ms buffer
     };
 
     trigger?.addEventListener('mouseenter', showNav);
     peekPill?.addEventListener('mouseenter', showNav);
     topNav?.addEventListener('mouseenter', showNav);
 
-    // Click on peek pill also opens and toggles
+    // Click on peek pill also reveals
     peekPill?.addEventListener('click', showNav);
 
     topNav?.addEventListener('mouseleave', scheduleHideNav);
     trigger?.addEventListener('mouseleave', scheduleHideNav);
+    peekPill?.addEventListener('mouseleave', scheduleHideNav);
   },
 
   toggleNavPin() {
@@ -134,18 +146,21 @@ const App = {
 
     const topNav = document.getElementById('top-navbar');
     const pinBtn = document.getElementById('btn-pin-nav');
+    const peekPill = document.getElementById('nav-peek-indicator');
     const pinText = pinBtn?.querySelector('.pin-text');
 
     if (pinned) {
       topNav?.classList.add('pinned');
       document.body.classList.add('nav-is-pinned');
       pinBtn?.classList.add('pinned');
+      peekPill?.classList.add('nav-open');
       if (pinText) pinText.innerText = 'Pinned';
       pinBtn?.setAttribute('title', 'Navbar is pinned. Click to enable auto-hide.');
     } else {
       topNav?.classList.remove('pinned');
       document.body.classList.remove('nav-is-pinned');
       pinBtn?.classList.remove('pinned');
+      peekPill?.classList.remove('nav-open');
       if (pinText) pinText.innerText = 'Pin Bar';
       pinBtn?.setAttribute('title', 'Click to pin navbar permanently.');
     }
@@ -154,6 +169,7 @@ const App = {
   hideNavbarImmediate() {
     if (this.navLeaveTimer) clearTimeout(this.navLeaveTimer);
     document.getElementById('top-navbar')?.classList.remove('nav-revealed');
+    document.getElementById('nav-peek-indicator')?.classList.remove('nav-open');
   },
 
   async loadDashboardData() {

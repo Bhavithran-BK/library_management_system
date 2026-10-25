@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scalable Library Management Platform</title>
-  <meta name="description" content="High-Performance Library Management Platform: Distributed Snowflake IDs, In-Memory Trie Autocomplete, Redis Cache-Aside & MongoDB Sharded Storage Ring">
+  <title>Apex Central Library | Digital Management Portal</title>
+  <meta name="description" content="Apex Central Library management portal: Book catalogue, smart instant search, loan circulation, member services, and cloud storage repository.">
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,55 +12,48 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Top Hover Trigger Area (Invisible boundary at top of viewport) -->
-  <div id="top-nav-trigger" class="top-nav-trigger" aria-label="Hover trigger for navigation"></div>
-
-  <!-- Minimalist Floating Peek Indicator Pill -->
-  <div id="nav-peek-indicator" class="nav-peek-indicator" title="Hover to reveal navigation bar">
-    <span class="peek-dot"></span>
-    <span class="peek-icon">📚</span>
-    <span class="peek-text">Navigation</span>
-    <span class="peek-chevron">▾</span>
+  <!-- Top Navigation Trigger Area & Peek Indicator -->
+  <div id="top-nav-trigger" class="top-nav-trigger" aria-label="Navigation trigger"></div>
+  <div id="nav-peek-indicator" class="nav-peek-indicator" title="Hover to view navigation menu">
+    <div class="peek-dot"></div>
+    <span>Apex Central Library</span>
+    <span class="peek-chevron">▼</span>
   </div>
 
-  <!-- Top Floating Glass Navigation Bar -->
+  <!-- Top Glass Navigation Bar (Reveals on Hover) -->
   <header id="top-navbar" class="top-navbar">
     <div class="top-navbar-container">
       
       <!-- Brand Section -->
-      <div class="brand-section" onclick="Router.navigate('dashboard')" role="button" tabindex="0" title="Go to Dashboard">
-        <div class="brand-logo-icon">📚</div>
+      <div class="brand-section" onclick="Router.navigate('catalogue')" role="button" tabindex="0" title="Apex Central Library">
+        <div class="brand-logo-icon">🏛️</div>
         <div class="brand-info">
-          <h2>LMS Portal</h2>
-          <span class="brand-badge">Enterprise Edition</span>
+          <h2>Apex Central Library</h2>
+          <span class="brand-badge">Digital Management Portal</span>
         </div>
       </div>
 
       <!-- Main Horizontal Navigation Menu -->
       <nav class="nav-menu" id="main-nav-menu">
-        <a class="nav-item active" data-view="dashboard" id="nav-dashboard">
-          <span class="nav-icon">📊</span>
-          <span class="nav-label">Dashboard</span>
-        </a>
-        <a class="nav-item" data-view="catalogue" id="nav-catalogue">
+        <a class="nav-item active" data-view="catalogue" id="nav-catalogue">
           <span class="nav-icon">📖</span>
           <span class="nav-label">Catalogue</span>
         </a>
         <a class="nav-item" data-view="discovery" id="nav-discovery">
           <span class="nav-icon">🔍</span>
-          <span class="nav-label">Discovery & Cache</span>
+          <span class="nav-label">Search</span>
         </a>
-        <a class="nav-item" data-view="benchmark" id="nav-benchmark">
-          <span class="nav-icon">⚡</span>
-          <span class="nav-label">Unique ID Gen</span>
-        </a>
-        <a class="nav-item" data-view="distribution" id="nav-distribution">
-          <span class="nav-icon">🌐</span>
-          <span class="nav-label">Storage Ring</span>
+        <a class="nav-item" data-view="dashboard" id="nav-dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
         </a>
         <a class="nav-item" data-view="shortlinks" id="nav-shortlinks">
           <span class="nav-icon">🔗</span>
-          <span class="nav-label">Short Links & Limits</span>
+          <span class="nav-label">Share Links</span>
+        </a>
+        <a class="nav-item" href="/simulation.html" id="nav-simulation" title="Interactive System Design Simulations (Member 4)">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Simulation</span>
         </a>
 
         <!-- Member Only Menu -->
@@ -77,7 +70,7 @@
           <div class="nav-group-divider"></div>
           <a class="nav-item" data-view="admin" id="nav-admin">
             <span class="nav-icon">⚙️</span>
-            <span class="nav-label">Admin Portal</span>
+            <span class="nav-label">Staff Admin</span>
           </a>
         </div>
 
@@ -95,7 +88,7 @@
         </div>
       </nav>
 
-      <!-- Right Actions: User Profile Card & Pin Navbar Toggle -->
+      <!-- Right Actions: User Profile Card, Mobile Toggle, Pin Button -->
       <div class="navbar-right-actions">
         <!-- User Card (Populated by Auth.js) -->
         <div class="user-card" id="sidebar-user-card" style="display: none;">
@@ -107,8 +100,8 @@
           <button class="btn-logout" title="Sign Out" onclick="Auth.logout()">🚪</button>
         </div>
 
-        <!-- Pin Navbar Toggle Button -->
-        <button id="btn-pin-nav" class="btn-pin-nav" title="Pin / Unpin Navbar" onclick="App.toggleNavPin()">
+        <!-- Pin Nav button -->
+        <button id="btn-pin-nav" class="btn-pin-nav" title="Click to pin navigation permanently" onclick="App.toggleNavPin()">
           <span id="pin-icon" class="pin-icon">📌</span>
           <span class="pin-text">Pin Bar</span>
         </button>
@@ -123,37 +116,45 @@
   <!-- Main Application Wrapper -->
   <div class="app-container">
     <div class="main-wrapper">
-      
-      <!-- Topbar Header -->
-      <header class="topbar">
-        <div class="topbar-title-wrap">
-          <div class="page-heading">
-            <h1>Scalable Library Management Platform</h1>
-            <p>Cloud-native catalogue management, intelligent search engine, and distributed storage cluster</p>
-          </div>
-        </div>
-
-        <div class="topbar-actions">
-          <div class="badge-concept badge-snowflake">
-            <span class="badge-icon">🛡️</span>
-            <span>Distributed Snowflake IDs</span>
-          </div>
-          <div class="badge-concept badge-redis">
-            <span class="badge-icon">⚡</span>
-            <span>Redis Cache & Trie Engine</span>
-          </div>
-          <div class="badge-concept badge-cluster">
-            <span class="badge-icon">🌐</span>
-            <span>Consistent Hash Storage Ring</span>
-          </div>
-        </div>
-      </header>
 
       <!-- Dynamic Content Views -->
       <main class="content-body">
         
-        <!-- ================= VIEW 1: DASHBOARD ================= -->
-        <section id="view-dashboard" class="view-section active">
+        <!-- ================= VIEW 1: BOOK CATALOGUE (PRIMARY VIEW) ================= -->
+        <!-- ================= VIEW 1: BOOK CATALOGUE (PRIMARY VIEW) ================= -->
+        <section id="view-catalogue" class="view-section active">
+          <div style="margin-bottom: 20px;">
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main);">Book Catalogue</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Explore our library collections, check real-time availability, and borrow or reserve titles.</p>
+          </div>
+
+          <!-- Search & Filter Controls -->
+          <div class="search-filter-bar">
+            <div class="search-input-wrap">
+              <span class="search-icon-inside">🔍</span>
+              <input type="text" id="catalogue-search-input" placeholder="Search books by title, author, or ISBN..." oninput="Books.handleSearch(this.value)">
+            </div>
+
+            <div class="category-chips">
+              <button class="chip active" data-category="ALL" onclick="Books.setCategory('ALL')">All Collections</button>
+              <button class="chip" data-category="System Architecture" onclick="Books.setCategory('System Architecture')">System Architecture</button>
+              <button class="chip" data-category="Computer Science" onclick="Books.setCategory('Computer Science')">Computer Science</button>
+              <button class="chip" data-category="Software Engineering" onclick="Books.setCategory('Software Engineering')">Software Engineering</button>
+              <button class="chip" data-category="Databases" onclick="Books.setCategory('Databases')">Databases</button>
+              <button class="chip" data-category="DevOps & SRE" onclick="Books.setCategory('DevOps & SRE')">DevOps & SRE</button>
+              <button class="chip" data-category="Algorithms" onclick="Books.setCategory('Algorithms')">Algorithms</button>
+            </div>
+          </div>
+
+          <!-- Books Grid -->
+          <div id="books-catalogue-grid" class="books-grid"></div>
+
+          <!-- Pagination -->
+          <div id="books-pagination"></div>
+        </section>
+
+        <!-- ================= VIEW 2: DASHBOARD ================= -->
+        <section id="view-dashboard" class="view-section">
           <!-- Stats Grid -->
           <div class="stats-grid">
             <div class="card stat-card">
@@ -192,75 +193,45 @@
               <div class="stat-icon-wrap fines">💵</div>
               <div class="stat-content">
                 <h3 id="stat-pending-fines">$0.00</h3>
-                <p>Pending Overdue Fines</p>
+                <p>Outstanding Fines</p>
               </div>
             </div>
           </div>
 
-          <!-- Quick Actions & Architecture Overview Banner -->
+          <!-- Clean Welcome Hero Banner -->
           <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px;" class="dashboard-hero-grid">
             <div class="card">
-              <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Enterprise Architecture Overview</h3>
-              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 22px;">
-                Complete digital library suite featuring high-concurrency Snowflake unique identification, sub-millisecond Redis caching, intelligent catalogue discovery with in-memory Trie autocomplete, and consistent hash partition routing for horizontal database scaling.
+              <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Welcome to Apex Central Library</h3>
+              <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 22px;">
+                Access our comprehensive repository of research monographs, reference textbooks, and technical literature. Search through collections instantly, borrow or reserve popular volumes, and manage circulation records through our digital portal.
               </p>
               <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="Router.navigate('catalogue')">📖 Browse Catalogue</button>
-                <button class="btn btn-outline" onclick="Router.navigate('benchmark')">⚡ Unique ID Generator</button>
-                <button class="btn btn-outline" onclick="Router.navigate('discovery')">🔍 Cache & Autocomplete</button>
+                <button class="btn btn-primary" onclick="Router.navigate('catalogue')">📖 Browse Full Catalogue</button>
+                <button class="btn btn-outline" onclick="Router.navigate('discovery')">🔍 Search Collections</button>
+                <button class="btn btn-outline" onclick="Router.navigate('shortlinks')">🔗 Share Links</button>
               </div>
             </div>
 
-            <div class="card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(6, 182, 212, 0.05)); border-color: rgba(99, 102, 241, 0.2);">
-              <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; color: var(--primary-600);">Quick Demo Accounts</h3>
-              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">One-click login to test different role permissions:</p>
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button class="btn btn-outline btn-sm" onclick="Auth.login('admin@library.com', 'Admin@123')">
-                  🔑 Login as <strong>Admin</strong> (admin@library.com)
-                </button>
-                <button class="btn btn-outline btn-sm" onclick="Auth.login('alice@example.com', 'Alice@123')">
-                  👤 Login as <strong>Alice</strong> (Active loan & overdue fine)
-                </button>
-                <button class="btn btn-outline btn-sm" onclick="Auth.login('bob@example.com', 'Bob@123')">
-                  👤 Login as <strong>Bob</strong> (Active reservation queue)
-                </button>
+            <div class="card" style="border-color: rgba(99, 102, 241, 0.2);">
+              <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--primary-600);">Circulation & Hours</h3>
+              <div style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 16px;">
+                <p><strong>🕒 Main Reading Hall:</strong> Mon – Sat, 8:00 AM – 10:00 PM</p>
+                <p><strong>📚 Borrowing Quota:</strong> Up to 5 titles per patron</p>
+                <p><strong>⏳ Loan Duration:</strong> 14 days with auto-renewal</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Router.navigate('member')">👤 Patron Portal</button>
+                <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Router.navigate('catalogue')">📖 Browse</button>
               </div>
             </div>
           </div>
-        </section>
-
-        <!-- ================= VIEW 2: BOOK CATALOGUE ================= -->
-        <section id="view-catalogue" class="view-section">
-          <!-- Search & Filter Controls -->
-          <div class="search-filter-bar">
-            <div class="search-input-wrap">
-              <span class="search-icon-inside">🔍</span>
-              <input type="text" id="catalogue-search-input" placeholder="Search by title, author, or ISBN..." oninput="Books.handleSearch(this.value)">
-            </div>
-
-            <div class="category-chips">
-              <button class="chip active" data-category="ALL" onclick="Books.setCategory('ALL')">All Categories</button>
-              <button class="chip" data-category="System Architecture" onclick="Books.setCategory('System Architecture')">System Architecture</button>
-              <button class="chip" data-category="Computer Science" onclick="Books.setCategory('Computer Science')">Computer Science</button>
-              <button class="chip" data-category="Software Engineering" onclick="Books.setCategory('Software Engineering')">Software Engineering</button>
-              <button class="chip" data-category="Databases" onclick="Books.setCategory('Databases')">Databases</button>
-              <button class="chip" data-category="DevOps & SRE" onclick="Books.setCategory('DevOps & SRE')">DevOps & SRE</button>
-              <button class="chip" data-category="Algorithms" onclick="Books.setCategory('Algorithms')">Algorithms</button>
-            </div>
-          </div>
-
-          <!-- Books Grid -->
-          <div id="books-catalogue-grid" class="books-grid"></div>
-
-          <!-- Pagination -->
-          <div id="books-pagination"></div>
         </section>
 
         <!-- ================= VIEW 3: MEMBER DASHBOARD ================= -->
         <section id="view-member" class="view-section">
           <div style="margin-bottom: 24px;">
-            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Member Portal</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Manage active loans, return books, track reservations, and settle overdue fines.</p>
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Patron Portal</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">View your currently borrowed books, return titles, check reservation waitlists, and settle overdue balances.</p>
           </div>
 
           <!-- Active Loans Section -->
@@ -271,19 +242,19 @@
 
           <!-- Reservations Section -->
           <div class="card" style="margin-bottom: 24px;">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">⏳ Active Reservations & Queue Status</h3>
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">⏳ Active Book Reservations</h3>
             <div id="member-reservations-list"></div>
           </div>
 
           <!-- Overdue Fines Section -->
           <div class="card" style="margin-bottom: 24px;">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">💵 Overdue Fines & Payment History</h3>
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">💵 Overdue Fines & Surcharges</h3>
             <div id="member-fines-list"></div>
           </div>
 
           <!-- Past Loan History -->
           <div class="card">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">📜 Loan History (Returned Books)</h3>
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">📜 Borrowing History</h3>
             <div id="member-loan-history-list"></div>
           </div>
         </section>
@@ -292,18 +263,21 @@
         <section id="view-admin" class="view-section">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
             <div>
-              <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Library Staff Administration</h2>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">Catalogue management, inventory control, loan records, and member directory.</p>
+              <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Staff Administration</h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Manage library collections, monitor all active loans, manage reservation queues, and view registered patrons.</p>
             </div>
             <button class="btn btn-primary" onclick="Admin.openAddBookModal()">+ Add New Book</button>
           </div>
 
           <!-- Admin Tabs -->
           <div class="category-chips" style="margin-bottom: 20px;">
-            <button class="chip active admin-tab-btn" data-tab="books" onclick="Admin.switchTab('books')">📚 Book Management</button>
-            <button class="chip admin-tab-btn" data-tab="loans" onclick="Admin.switchTab('loans')">🔄 All Active/Past Loans</button>
+            <button class="chip active admin-tab-btn" data-tab="books" onclick="Admin.switchTab('books')">📚 Catalogue Inventory</button>
+            <button class="chip admin-tab-btn" data-tab="loans" onclick="Admin.switchTab('loans')">🔄 Circulation & Loans</button>
             <button class="chip admin-tab-btn" data-tab="reservations" onclick="Admin.switchTab('reservations')">⏳ Reservation Queues</button>
-            <button class="chip admin-tab-btn" data-tab="members" onclick="Admin.switchTab('members')">👥 Registered Members</button>
+            <button class="chip admin-tab-btn" data-tab="members" onclick="Admin.switchTab('members')">👥 Registered Patrons</button>
+            <button class="chip admin-tab-btn" data-tab="traffic" onclick="Admin.switchTab('traffic')">🛡️ Traffic Protection</button>
+            <button class="chip admin-tab-btn" data-tab="storage" onclick="Admin.switchTab('storage')">🌐 Storage Cluster</button>
+            <button class="chip admin-tab-btn" data-tab="idgen" onclick="Admin.switchTab('idgen')">⚡ ID Registry</button>
           </div>
 
           <!-- Tab Pane: Books -->
@@ -317,7 +291,7 @@
                     <th>Authors</th>
                     <th>ISBN</th>
                     <th>Category</th>
-                    <th>Stock (Avail / Total)</th>
+                    <th>Copies (Avail / Total)</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -383,122 +357,581 @@
               </table>
             </div>
           </div>
+
+          <!-- Tab Pane: Traffic Protection & Rate Limiting -->
+          <div id="admin-pane-traffic" class="admin-tab-pane" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">Circulation API Protection & Rate Limiting</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Protects library endpoints against bot scraping and burst traffic overload.</p>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <span id="rl-redis-status" class="status-pill active">🟢 TRAFFIC PROTECTION ACTIVE</span>
+                <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadRateLimitStats()">🔄 Refresh</button>
+              </div>
+            </div>
+
+            <!-- Diagnostic Metric Cards -->
+            <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 24px;">
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="rl-stat-capacity" style="font-size: 1.4rem; color: var(--primary-600);">100</div>
+                  <p>Burst Capacity Limit</p>
+                </div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="rl-stat-refill" style="font-size: 1.4rem; color: #D97706;">10 / sec</div>
+                  <p>Token Refill Rate</p>
+                </div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="rl-stat-total" style="font-size: 1.4rem; color: var(--primary-500);">0</div>
+                  <p>Total Handled</p>
+                </div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="rl-stat-allowed" style="font-size: 1.4rem; color: var(--success);">0</div>
+                  <p>Processed Requests</p>
+                </div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="rl-stat-rejected" style="font-size: 1.4rem; color: var(--danger);">0</div>
+                  <p>Throttled Requests</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;" class="member4-grid">
+              <!-- Live Bucket Status -->
+              <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+                  <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">Live Token Bucket Capacity</h4>
+                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.resetRateLimiter()">Reset Limits</button>
+                </div>
+                <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem; font-weight: 600;">
+                    <span>Available Capacity:</span>
+                    <span id="rl-bucket-tokens-display" style="color: var(--primary-600); font-family: var(--font-mono);">100 / 100 tokens</span>
+                  </div>
+                  <div style="background: rgba(226, 232, 240, 0.8); border-radius: 999px; height: 10px; overflow: hidden;">
+                    <div id="rl-bucket-fill" style="background: linear-gradient(90deg, #059669, #4F46E5); height: 100%; width: 100%; transition: width 0.3s ease;"></div>
+                  </div>
+                </div>
+
+                <!-- Slug Encoding Visualizer -->
+                <div style="border-top: 1px solid var(--border-color); padding-top: 14px;">
+                  <div style="font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">
+                    🔢 Base62 Accession Slug Encoder:
+                  </div>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="number" class="form-control" id="base62-demo-num" placeholder="e.g. 100042" style="font-family: var(--font-mono); font-size: 0.85rem; max-width: 180px;" value="100042">
+                    <div id="base62-live-result" style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-main);">
+                      Short Code: <strong style="color: var(--primary-600);">q0w</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Burst Simulator -->
+              <div class="card">
+                <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+                  <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">Peak Load Stress Verification</h4>
+                </div>
+                <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 12px;">Simulate concurrent patron request bursts to verify automated throttling:</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
+                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.runBurstSimulation(20)">20 Reqs</button>
+                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.runBurstSimulation(50)">50 Reqs</button>
+                  <button class="btn btn-primary btn-sm" id="btn-sim-burst" onclick="ShortLinksUI.runBurstSimulation(120)">120 Reqs (Burst Stress)</button>
+                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.runBurstSimulation(150)">150 Reqs</button>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.testLiveHeaderInspection()">Live Probe /api/books</button>
+                  <span style="font-size: 0.78rem; color: var(--text-muted);">Inspects live rate limit headers</span>
+                </div>
+                <div id="rl-header-test-result" style="display: none; margin-top: 10px;"></div>
+                <div id="rl-sim-result" style="display: none; margin-top: 10px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Pane: Storage Infrastructure & Cluster Topology -->
+          <div id="admin-pane-storage" class="admin-tab-pane" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">Distributed Storage & Cluster Topology</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Database shard topology, partition ring management, and consistent hashing router.</p>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <span id="dist-cluster-badge" class="status-pill active">CLUSTER READY</span>
+                <button class="btn btn-outline btn-sm" onclick="Distribution.loadOverview()">🔄 Refresh Status</button>
+              </div>
+            </div>
+
+            <!-- Top Status Grid -->
+            <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="dist-node-count" style="font-size: 1.4rem; color: var(--primary-600);">4</div>
+                  <p>Logical Storage Nodes</p>
+                </div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="dist-vnode-count" style="font-size: 1.4rem; color: #D97706;">150</div>
+                  <p>Virtual Partitions / Node</p>
+                </div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="dist-total-vnodes" style="font-size: 1.4rem; color: var(--primary-500);">600</div>
+                  <p>Total Ring Partitions</p>
+                </div>
+              </div>
+              <div class="card stat-card">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="dist-cv" style="font-size: 1.4rem; color: var(--success);">&lt; 8%</div>
+                  <p>Ring Variance</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- MongoDB Sharding Architecture Panel -->
+            <div class="card" style="margin-bottom: 24px; border-color: rgba(99, 102, 241, 0.25);">
+              <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+                <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-600); display: flex; align-items: center; gap: 8px;">
+                  <span>🍃</span> Database Cluster Architecture
+                </h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+                  Cluster Status: <strong id="dist-cluster-type" style="color: var(--text-main);">STANDALONE_DEV</strong> | Active Database: <code id="dist-conn-uri" style="color: var(--primary-600);">mongodb://localhost:27017/library_db</code>
+                </p>
+              </div>
+              <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 20px;" class="distribution-shards-grid">
+                <div>
+                  <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">
+                    Active Storage Shards & Replicas:
+                  </div>
+                  <div id="dist-shards-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
+                </div>
+                <div>
+                  <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">
+                    Partition Keys & Ingestion Routing:
+                  </div>
+                  <div id="dist-shard-keys-list"></div>
+                  <div class="card-subtle-box" style="margin-top: 10px; padding: 10px; border-radius: var(--radius-sm); font-size: 0.75rem;">
+                    <span style="color: var(--text-dim);">Database Partition Keys:</span><br>
+                    <code style="color: var(--primary-600); font-weight: 700;">{ bookId: "hashed", memberId: "hashed" }</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Storage Nodes Grid -->
+            <div class="card" style="margin-bottom: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                  <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">🌐 Storage Nodes & Key Distribution</h4>
+                  <p style="font-size: 0.8rem; color: var(--text-muted);">
+                    Partition Router: <strong id="dist-algo">32-bit MurmurHash3</strong> | Catalogued Entities: <strong id="dist-total-keys" style="color: var(--primary-600);">0</strong> records
+                  </p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" class="form-control" id="dist-new-node-input" placeholder="New node ID (e.g. storage-node-5)" style="width: 200px; font-size: 0.82rem;">
+                  <button class="btn btn-primary btn-sm" onclick="Distribution.addNode()">+ Add Node</button>
+                </div>
+              </div>
+              <div id="dist-nodes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;"></div>
+            </div>
+
+            <!-- Key Routing & Scaling Simulator -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;" class="distribution-sim-grid">
+              <div class="card">
+                <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">🎯 Single Key Routing Inspector</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Trace how any accession number or ISBN resolves to a storage node:</p>
+                <div class="form-group">
+                  <input type="text" class="form-control" id="dist-route-input" placeholder="Type key (e.g. BK-100, 978-0132350884, MEM-001)...">
+                </div>
+                <div id="dist-route-result">
+                  <div class="card-subtle-box" style="padding: 12px; border-radius: var(--radius-md); font-size: 0.82rem; color: var(--text-dim); text-align: center;">
+                    Enter a key above to trace its hash value and target storage node.
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">📈 Dynamic Node Scaling Simulation</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Simulate adding or removing a cluster node to verify minimal re-routing:</p>
+                <div class="form-row" style="margin-bottom: 10px;">
+                  <div class="form-group" style="flex: 2;">
+                    <label style="font-size: 0.72rem;">Node Identifier</label>
+                    <input type="text" class="form-control" id="dist-sim-node-input" value="storage-node-scale-demo">
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label style="font-size: 0.72rem;">Action</label>
+                    <select class="form-control" id="dist-sim-op-select">
+                      <option value="ADD">Add (+)</option>
+                      <option value="REMOVE">Remove (-)</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label style="font-size: 0.72rem;">Sample</label>
+                    <input type="number" class="form-control" id="dist-sim-keys-input" value="2000" min="100" max="20000" step="500">
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-primary btn-sm" style="flex: 2;" onclick="Distribution.runRebalanceSimulation()">🚀 Run Simulation</button>
+                  <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Distribution.runUniformityBenchmark()">⚡ 10k Bench</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="dist-rebalance-result" class="card" style="display: none; margin-top: 20px;"></div>
+            <div id="dist-bench-report" class="card" style="display: none; margin-top: 20px;"></div>
+
+            <!-- Hidden container elements to preserve JS compatibility -->
+            <div style="display: none;">
+              <span id="dist-coop-app"></span>
+              <span id="dist-coop-db"></span>
+              <span id="dist-coop-synergy"></span>
+            </div>
+          </div>
+
+          <!-- Tab Pane: Accession Barcode ID Generator -->
+          <div id="admin-pane-idgen" class="admin-tab-pane" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">Universal Accession & Barcode ID Registry</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">Generates collision-free, distributed 64-bit accession numbers across catalogue items.</p>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;" class="benchmark-grid">
+              <!-- Single ID Generation Playground -->
+              <div class="card">
+                <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 12px;">Live Accession ID Generator</h4>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">Generate live unique entity identifiers with prefix classification:</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('book')">📖 Book (BK-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('member')">👤 Member (MEM-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('loan')">🔄 Loan (LN-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('reservation')">⏳ Reservation (RES-)</button>
+                  <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('transaction')">💳 Fine Txn (TXN-)</button>
+                </div>
+                <div id="playground-result">
+                  <div class="card-subtle-box" style="padding: 14px; border-radius: var(--radius-md); font-size: 0.82rem; color: var(--text-dim); text-align: center;">
+                    Click any button above to generate a unique accession number.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Concurrent Benchmark Panel -->
+              <div class="card benchmark-card">
+                <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 12px;">Throughput Benchmark</h4>
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label style="font-size: 0.75rem;">Unique IDs to Generate</label>
+                  <input type="number" class="form-control" id="bench-count" value="10000" min="100" max="100000" step="1000">
+                </div>
+                <div class="form-row" style="margin-bottom: 10px;">
+                  <div class="form-group">
+                    <label style="font-size: 0.75rem;">Threads</label>
+                    <input type="number" class="form-control" id="bench-threads" value="8" min="1" max="32">
+                  </div>
+                  <div class="form-group">
+                    <label style="font-size: 0.75rem;">Strategy</label>
+                    <select class="form-control" id="bench-strategy">
+                      <option value="snowflake">Distributed Snowflake (Base62)</option>
+                      <option value="tsid">Time-Sorted ID (TSID Base32)</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="btn btn-primary" id="btn-run-bench" onclick="Benchmark.runLiveBenchmark()" style="width: 100%;">
+                  🚀 Run Concurrent Benchmark
+                </button>
+              </div>
+            </div>
+
+            <!-- Benchmark Results Display -->
+            <div id="bench-results-wrap" class="card" style="display: none; border-color: rgba(99, 102, 241, 0.4);">
+              <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 16px;">
+                <div>
+                  <h4 style="font-size: 1.1rem; font-weight: 700; color: var(--primary-600);">Benchmark Execution Report</h4>
+                  <p style="font-size: 0.78rem; color: var(--text-muted);" id="bench-res-strategy">Strategy</p>
+                </div>
+                <span class="status-pill active" style="font-size: 0.8rem;">Completed Successfully</span>
+              </div>
+              <div class="stats-grid" style="margin-bottom: 20px;">
+                <div class="card stat-card card-subtle-box" style="padding: 10px;">
+                  <div class="stat-content">
+                    <div class="metric-highlight" id="bench-res-throughput" style="font-size: 1.25rem;">0</div>
+                    <p style="font-size: 0.72rem;">Throughput (IDs/sec)</p>
+                  </div>
+                </div>
+                <div class="card stat-card card-subtle-box" style="padding: 10px;">
+                  <div class="stat-content">
+                    <div class="metric-highlight" id="bench-res-collisions" style="color: var(--success); font-size: 1.25rem;">0</div>
+                    <p style="font-size: 0.72rem;">Collisions</p>
+                  </div>
+                </div>
+                <div class="card stat-card card-subtle-box" style="padding: 10px;">
+                  <div class="stat-content">
+                    <div class="metric-highlight" id="bench-res-duration" style="color: #D97706; font-size: 1.25rem;">0 ms</div>
+                    <p style="font-size: 0.72rem;">Latency</p>
+                  </div>
+                </div>
+                <div class="card stat-card card-subtle-box" style="padding: 10px;">
+                  <div class="stat-content">
+                    <div class="metric-highlight" id="bench-res-total" style="color: var(--primary-600); font-size: 1.25rem;">0</div>
+                    <p style="font-size: 0.72rem;">Total Generated</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h5 style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px;">Sample Generated Accession Numbers:</h5>
+                <div id="bench-sample-ids" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <!-- ================= VIEW 5: UNIQUE ID GENERATOR BENCHMARK ================= -->
-        <section id="view-benchmark" class="view-section">
+        <!-- ================= VIEW 5: SEARCH & DISCOVERY ================= -->
+        <section id="view-discovery" class="view-section">
           <div style="margin-bottom: 24px;">
-            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Distributed Unique ID Generator</h2>
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Search & Discovery</h2>
             <p style="font-size: 0.85rem; color: var(--text-muted);">
-              High-concurrency, collision-free 64-bit Snowflake identification with Base62 encoding for global entity tracking.
+              Instant title and author recommendations, multi-attribute catalog queries, and digital record harvesting.
             </p>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;" class="benchmark-grid">
-            <!-- Benchmark Control Panel -->
-            <div class="card benchmark-card">
-              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">Concurrent Collision Benchmark</h3>
+          <!-- Subtle Collapsible Search Telemetry (Preserves DOM IDs for discovery.js) -->
+          <details class="card-subtle-box" style="margin-bottom: 24px; padding: 10px 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <summary style="font-size: 0.82rem; font-weight: 600; color: var(--text-dim); cursor: pointer; user-select: none;">
+              ⚙️ Search Engine Telemetry & Cache Performance Metrics
+            </summary>
+            <div id="stat-redis-status" style="display: none;">🟢 SEARCH INDEX ACTIVE</div>
+            <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-top: 14px; margin-bottom: 8px;">
+              <div class="card stat-card" style="padding: 12px;">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="stat-book-hits" style="color: var(--success); font-size: 1.25rem;">0</div>
+                  <p style="font-size: 0.75rem;">Book Cache Hits</p>
+                </div>
+              </div>
+              <div class="card stat-card" style="padding: 12px;">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="stat-book-misses" style="color: #D97706; font-size: 1.25rem;">0</div>
+                  <p style="font-size: 0.75rem;">Book Cache Misses</p>
+                </div>
+              </div>
+              <div class="card stat-card" style="padding: 12px;">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="stat-search-hits" style="color: var(--success); font-size: 1.25rem;">0</div>
+                  <p style="font-size: 0.75rem;">Search Cache Hits</p>
+                </div>
+              </div>
+              <div class="card stat-card" style="padding: 12px;">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="stat-search-misses" style="color: #D97706; font-size: 1.25rem;">0</div>
+                  <p style="font-size: 0.75rem;">Search Cache Misses</p>
+                </div>
+              </div>
+              <div class="card stat-card" style="padding: 12px;">
+                <div class="stat-content">
+                  <div class="metric-highlight" id="stat-cache-ratio" style="color: var(--primary-600); font-size: 1.25rem;">0.00%</div>
+                  <p style="font-size: 0.75rem;">Cache Hit Ratio</p>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;" class="discovery-grid">
+            <!-- Title & Author Suggestions -->
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 1.1rem; font-weight: 700;">⚡ Instant Title & Author Suggestions</h3>
+                <span id="discovery-trie-latency" style="font-size: 0.8rem; color: var(--text-muted);"></span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Fast character-by-character title and author recommendations from the catalog memory index:
+              </p>
               <div class="form-group">
-                <label>Number of Unique IDs to Generate</label>
-                <input type="number" class="form-control" id="bench-count" value="10000" min="100" max="100000" step="1000">
+                <input type="text" class="form-control" id="discovery-trie-input" placeholder="Type letters (e.g. 'clean', 'sys', 'data', 'martin')...">
               </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Concurrency Threads</label>
-                  <input type="number" class="form-control" id="bench-threads" value="8" min="1" max="32">
-                </div>
-                <div class="form-group">
-                  <label>ID Generator Strategy</label>
-                  <select class="form-control" id="bench-strategy">
-                    <option value="snowflake">Distributed Snowflake (Base62)</option>
-                    <option value="tsid">Time-Sorted ID (TSID Base32)</option>
-                  </select>
-                </div>
+              <div id="discovery-trie-results" class="card-subtle-box" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; padding: 12px; border-radius: var(--radius-md);">
+                <span style="color: var(--text-dim); font-size: 0.85rem;">Type a search prefix above for real-time matches...</span>
               </div>
-
-              <button class="btn btn-primary" id="btn-run-bench" onclick="Benchmark.runLiveBenchmark()" style="width: 100%;">
-                🚀 Run Concurrent Benchmark
-              </button>
             </div>
 
-            <!-- Single ID Generation Playground -->
+            <!-- Catalogue Keyword Search -->
             <div class="card">
-              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;">Interactive ID Generation Playground</h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-                Generate individual collision-resistant IDs across each domain prefix:
-              </p>
-              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
-                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('book')">📖 Book (BK-)</button>
-                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('member')">👤 Member (MEM-)</button>
-                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('loan')">🔄 Loan (LN-)</button>
-                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('reservation')">⏳ Reservation (RES-)</button>
-                <button class="btn btn-outline btn-sm" onclick="Benchmark.generateSampleId('transaction')">💳 Fine Txn (TXN-)</button>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 1.1rem; font-weight: 700;">🔍 Catalogue Keyword Search</h3>
+                <span id="discovery-cache-badge" class="badge-concept badge-redis" style="font-size: 0.75rem;">INDEX READY</span>
               </div>
-
-              <div id="playground-result">
-                <div class="card-subtle-box" style="padding: 16px; border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-dim); text-align: center;">
-                  Click any button above to generate a live identifier.
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                Search across titles, descriptions, and categories with real-time stock availability filtering:
+              </p>
+              <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <input type="text" class="form-control" id="discovery-search-q" placeholder="Enter keywords..." style="flex: 2;">
+                <select class="form-control" id="discovery-search-avail" style="flex: 1;">
+                  <option value="">All Stock</option>
+                  <option value="true">In Stock</option>
+                  <option value="false">Out of Stock</option>
+                </select>
+                <button class="btn btn-primary" onclick="Discovery.runSearch()">Search</button>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px;">
+                Search Latency: <strong id="discovery-search-latency" style="color: var(--primary-600);">0 ms</strong>
+              </div>
+              <div id="discovery-search-results" style="max-height: 280px; overflow-y: auto;">
+                <div style="text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.85rem;">
+                  Click 'Search' or choose a suggestion to view catalog items.
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Benchmark Results Display -->
-          <div id="bench-results-wrap" class="card" style="display: none; border-color: rgba(99, 102, 241, 0.4);">
-            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 20px;">
-              <div>
-                <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-600);">Benchmark Execution Report</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted);" id="bench-res-strategy">Strategy</p>
-              </div>
-              <span class="status-pill active" style="font-size: 0.85rem;">Completed Successfully</span>
+          <!-- Automated Catalog Metadata Ingestion / Crawler Panel -->
+          <div class="card">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">🌐 Automated Catalog Metadata Ingestion</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+              Harvests digital records from external repository sources, extracts volume metadata, and prepares items for cataloguing:
+            </p>
+            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+              <input type="text" class="form-control" id="crawler-seed-url" value="http://localhost:8081/api/crawler/simulated-source?page=1" style="flex: 1; min-width: 260px;">
+              <button class="btn btn-primary" onclick="Discovery.runCrawler()">🚀 Ingest Remote Source</button>
             </div>
+            <div id="crawler-stats-container" style="display: none; margin-bottom: 16px;"></div>
+            <div id="crawler-extracted-books"></div>
+          </div>
+        </section>
 
-            <div class="stats-grid" style="margin-bottom: 24px;">
-              <div class="card stat-card card-subtle-box">
-                <div class="stat-content">
-                  <div class="metric-highlight" id="bench-res-throughput">0</div>
-                  <p>Throughput (IDs/sec)</p>
-                </div>
-              </div>
-
-              <div class="card stat-card card-subtle-box">
-                <div class="stat-content">
-                  <div class="metric-highlight" id="bench-res-collisions" style="color: var(--success);">0</div>
-                  <p>Collision Count</p>
-                </div>
-              </div>
-
-              <div class="card stat-card card-subtle-box">
-                <div class="stat-content">
-                  <div class="metric-highlight" id="bench-res-duration" style="color: #D97706;">0 ms</div>
-                  <p>Execution Latency</p>
-                </div>
-              </div>
-
-              <div class="card stat-card card-subtle-box">
-                <div class="stat-content">
-                  <div class="metric-highlight" id="bench-res-total" style="color: var(--primary-600);">0</div>
-                  <p>Total Generated</p>
-                </div>
-              </div>
-            </div>
-
+        <!-- ================= VIEW 6: SHAREABLE LINKS ================= -->
+        <section id="view-shortlinks" class="view-section">
+          <div class="view-header" style="margin-bottom: 24px;">
             <div>
-              <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px;">Sample Generated IDs from Set:</h4>
-              <div id="bench-sample-ids" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+              <div class="view-header-title">
+                <span class="view-header-icon">🔗</span>
+                <h2>Shareable Links & Access Gateway</h2>
+              </div>
+              <p class="view-header-subtitle">
+                Create and manage compact, shareable URLs for library books, reading lists, and direct resource links.
+              </p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadShortLinks()">🔄 Refresh Table</button>
+          </div>
+
+          <!-- Shareable Link Generator Form -->
+          <div class="card" style="margin-bottom: 28px;">
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+              <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                <span>✂️</span> Shareable Book Link Generator
+              </h3>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+              Creates compact, easy-to-share links for books, reading lists, and specific catalogue records with instant redirection:
+            </p>
+
+            <form id="shortlink-create-form">
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label style="font-size: 0.82rem; font-weight: 600;">Destination Target URL / Catalogue Path</label>
+                <input type="text" class="form-control" id="shortlink-target-input" required placeholder="/#catalogue?id=BK-100" style="font-family: var(--font-mono); font-size: 0.85rem;">
+              </div>
+
+              <div class="form-row" style="margin-bottom: 14px;">
+                <div class="form-group">
+                  <label style="font-size: 0.82rem; font-weight: 600;">Book ID (Optional)</label>
+                  <input type="text" class="form-control" id="shortlink-bookid-input" placeholder="BK-100" style="font-family: var(--font-mono); font-size: 0.85rem;">
+                </div>
+                <div class="form-group">
+                  <label style="font-size: 0.82rem; font-weight: 600;">Link Title / Description</label>
+                  <input type="text" class="form-control" id="shortlink-title-input" placeholder="Clean Architecture Guide">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">⚡ Create Shareable Link</button>
+            </form>
+
+            <!-- Created Link Preview -->
+            <div id="shortlink-created-display" style="display: none; margin-top: 16px;"></div>
+          </div>
+
+          <!-- Active Short Links Table Panel -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                  <span>📋</span> Active Shareable Links & Access Analytics
+                </h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+                  Shortened URLs automatically track patron clicks and record last access timestamps.
+                </p>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadShortLinks()">🔄 Refresh Table</button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Short URL (Redirect)</th>
+                    <th>Destination Target</th>
+                    <th>Click Count</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="shortlinks-table-body">
+                  <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                      Loading short links...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
 
-        <!-- ================= VIEW 6: LOGIN ================= -->
+        <!-- ================= VIEW 7: STORAGE CLUSTER REDIRECT ================= -->
+        <section id="view-distribution" class="view-section">
+          <div class="card" style="text-align: center; padding: 48px 24px; max-width: 600px; margin: 40px auto;">
+            <div style="font-size: 3rem; margin-bottom: 12px;">🌐</div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;">Storage Infrastructure & Cluster Topology</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
+              Database sharding topology and partition ring management tools are maintained in the Staff Administration panel.
+            </p>
+            <button class="btn btn-primary" onclick="Router.navigate('admin'); Admin.switchTab('storage');">
+              ⚙️ Open Storage Cluster in Staff Admin
+            </button>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 8: UNIVERSAL ID REGISTRY REDIRECT ================= -->
+        <section id="view-benchmark" class="view-section">
+          <div class="card" style="text-align: center; padding: 48px 24px; max-width: 600px; margin: 40px auto;">
+            <div style="font-size: 3rem; margin-bottom: 12px;">⚡</div>
+            <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 8px;">Accession & Barcode ID Registry</h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
+              Unique accession number generation and concurrent throughput benchmarks are managed in Staff Administration.
+            </p>
+            <button class="btn btn-primary" onclick="Router.navigate('admin'); Admin.switchTab('idgen');">
+              ⚙️ Open ID Registry in Staff Admin
+            </button>
+          </div>
+        </section>
+
+        <!-- ================= VIEW 9: LOGIN ================= -->
         <section id="view-login" class="view-section">
           <div style="max-width: 440px; margin: 40px auto;">
             <div class="card">
               <div style="text-align: center; margin-bottom: 24px;">
                 <div style="font-size: 36px; margin-bottom: 8px;">🔐</div>
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Sign In to Library</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Enter your credentials to access loans and reservations.</p>
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Sign In to Library Portal</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Enter your credentials to manage borrowed books and reservations.</p>
               </div>
 
               <form onsubmit="event.preventDefault(); Auth.login(document.getElementById('login-email').value, document.getElementById('login-password').value);">
@@ -517,6 +950,13 @@
                 </button>
               </form>
 
+              <div style="text-align: center; margin-top: 14px; font-size: 0.8rem; color: var(--text-muted);">
+                Quick Demo Accounts:
+                <a href="javascript:void(0)" onclick="document.getElementById('login-email').value='admin@library.com';document.getElementById('login-password').value='Admin@123';" style="color: var(--primary-600); font-weight: 600; margin: 0 4px;">Staff Admin</a> •
+                <a href="javascript:void(0)" onclick="document.getElementById('login-email').value='alice@example.com';document.getElementById('login-password').value='Alice@123';" style="color: var(--primary-600); font-weight: 600; margin: 0 4px;">Patron Alice</a> •
+                <a href="javascript:void(0)" onclick="document.getElementById('login-email').value='bob@example.com';document.getElementById('login-password').value='Bob@123';" style="color: var(--primary-600); font-weight: 600; margin: 0 4px;">Patron Bob</a>
+              </div>
+
               <div style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted);">
                 Don't have an account? <a href="#" onclick="event.preventDefault(); Router.navigate('register');" style="color: var(--primary-600); font-weight: 600;">Register here</a>
               </div>
@@ -524,14 +964,14 @@
           </div>
         </section>
 
-        <!-- ================= VIEW 7: REGISTRATION ================= -->
+        <!-- ================= VIEW 10: REGISTRATION ================= -->
         <section id="view-register" class="view-section">
           <div style="max-width: 480px; margin: 40px auto;">
             <div class="card">
               <div style="text-align: center; margin-bottom: 24px;">
                 <div style="font-size: 36px; margin-bottom: 8px;">📝</div>
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Member Registration</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Join the library to borrow books and manage reservations.</p>
+                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Patron Registration</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Join Apex Central Library to borrow books and access digital resources.</p>
               </div>
 
               <form onsubmit="event.preventDefault(); Auth.register(
@@ -564,8 +1004,8 @@
                   <div class="form-group">
                     <label>Account Role</label>
                     <select class="form-control" id="reg-role">
-                      <option value="MEMBER">Member</option>
-                      <option value="ADMIN">Administrator</option>
+                      <option value="MEMBER">Patron / Member</option>
+                      <option value="ADMIN">Staff Administrator</option>
                     </select>
                   </div>
                 </div>
@@ -580,562 +1020,6 @@
               </div>
             </div>
           </div>
-        </section>
-
-        <!-- ================= VIEW: BOOK DISCOVERY ================= -->
-        <section id="view-discovery" class="view-section">
-          <div style="margin-bottom: 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
-              <div>
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Book Discovery & Redis Cache Engine</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">
-                  In-Memory Prefix Search, Redis Cache-Aside Engine & High-Throughput Catalogue Crawler.
-                </p>
-              </div>
-              <div id="stat-redis-status" class="status-pill active">🟢 CONNECTED</div>
-            </div>
-          </div>
-
-          <!-- Redis Telemetry Cards -->
-          <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 28px;">
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="stat-book-hits" style="color: var(--success); font-size: 1.4rem;">0</div>
-                <p>Book Cache Hits</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="stat-book-misses" style="color: #D97706; font-size: 1.4rem;">0</div>
-                <p>Book Cache Misses</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="stat-search-hits" style="color: var(--success); font-size: 1.4rem;">0</div>
-                <p>Search Cache Hits</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="stat-search-misses" style="color: #D97706; font-size: 1.4rem;">0</div>
-                <p>Search Cache Misses</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="stat-cache-ratio" style="color: var(--primary-600); font-size: 1.4rem;">0.00%</div>
-                <p>Overall Hit Ratio</p>
-              </div>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;" class="discovery-grid">
-            <!-- Trie Autocomplete Tester -->
-            <div class="card">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 1.1rem; font-weight: 700;">⚡ Trie Autocomplete Playground</h3>
-                <span id="discovery-trie-latency" style="font-size: 0.8rem; color: var(--text-muted);"></span>
-              </div>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-                Type any prefix to fetch instantaneous suggestions from the in-memory Trie data structure:
-              </p>
-              <div class="form-group">
-                <input type="text" class="form-control" id="discovery-trie-input" placeholder="Type prefix (e.g. 'clean', 'sys', 'data', 'martin')...">
-              </div>
-              <div id="discovery-trie-results" class="card-subtle-box" style="display: flex; flex-wrap: wrap; gap: 8px; min-height: 40px; padding: 12px; border-radius: var(--radius-md);">
-                <span style="color: var(--text-dim); font-size: 0.85rem;">Type a prefix above to test Trie prefix matching...</span>
-              </div>
-            </div>
-
-            <!-- Redis Multi-Field Search Explorer -->
-            <div class="card">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h3 style="font-size: 1.1rem; font-weight: 700;">🔍 Cache-Aside Search Explorer</h3>
-                <span id="discovery-cache-badge" class="badge-concept badge-redis" style="font-size: 0.75rem;">REDIS READY</span>
-              </div>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-                Queries check Redis first (<code>search:{query}:{page}:{size}:{avail}</code>). Cache hit returns in &lt;2ms; miss queries MongoDB and caches with TTL.
-              </p>
-              <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                <input type="text" class="form-control" id="discovery-search-q" placeholder="Search term..." style="flex: 2;">
-                <select class="form-control" id="discovery-search-avail" style="flex: 1;">
-                  <option value="">All Stock</option>
-                  <option value="true">In Stock</option>
-                  <option value="false">Out of Stock</option>
-                </select>
-                <button class="btn btn-primary" onclick="Discovery.runSearch()">Search</button>
-              </div>
-              <div style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 12px;">
-                Execution Latency: <strong id="discovery-search-latency" style="color: var(--primary-600);">0 ms</strong>
-              </div>
-              <div id="discovery-search-results" style="max-height: 280px; overflow-y: auto;">
-                <div style="text-align: center; padding: 20px; color: var(--text-dim); font-size: 0.85rem;">
-                  Click 'Search' or pick a Trie suggestion above to execute cached search.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Controlled Crawler Panel -->
-          <div class="card">
-            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">🕷️ Automated Catalogue Discovery Crawler</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-              Crawls permitted catalogue sources, extracts book metadata, deduplicates URLs, and stages records for catalogue ingestion:
-            </p>
-            <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
-              <input type="text" class="form-control" id="crawler-seed-url" value="http://localhost:8081/api/crawler/simulated-source?page=1" style="flex: 1; min-width: 260px;">
-              <button class="btn btn-primary" onclick="Discovery.runCrawler()">🚀 Run Controlled Crawl</button>
-            </div>
-            <div id="crawler-stats-container" style="display: none; margin-bottom: 16px;"></div>
-            <div id="crawler-extracted-books"></div>
-          </div>
-        </section>
-
-        <!-- ================= VIEW: DISTRIBUTED STORAGE & SHARDING ================= -->
-        <section id="view-distribution" class="view-section">
-          <div style="margin-bottom: 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
-              <div>
-                <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main);">Distributed Storage & Partition Routing</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">
-                  Consistent Hashing Partition Ring & Distributed Cluster Topology Manager.
-                </p>
-              </div>
-              <div id="dist-cluster-badge" class="status-pill active">CLUSTER READY</div>
-            </div>
-          </div>
-
-          <!-- Top Status Grid -->
-          <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 28px;">
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="dist-node-count" style="font-size: 1.5rem; color: var(--primary-600);">4</div>
-                <p>Logical Storage Nodes</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="dist-vnode-count" style="font-size: 1.5rem; color: #D97706;">150</div>
-                <p>VNodes per Physical Node</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="dist-total-vnodes" style="font-size: 1.5rem; color: var(--primary-500);">600</div>
-                <p>Total Virtual Points on Ring</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="dist-cv" style="font-size: 1.5rem; color: var(--success);">&lt; 8%</div>
-                <p>Ring Variance (Coeff. Var)</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- MongoDB Sharding Architecture Panel -->
-          <div class="card" style="margin-bottom: 28px; border-color: rgba(99, 102, 241, 0.25);">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 14px; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
-              <div>
-                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-600); display: flex; align-items: center; gap: 8px;">
-                  <span>🍃</span> MongoDB Sharded Deployment Architecture
-                </h3>
-                <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">
-                  Deployment Mode: <strong id="dist-cluster-type" style="color: var(--text-main);">STANDALONE_DEV</strong> | URI: <code id="dist-conn-uri" style="color: var(--primary-600);">mongodb://localhost:27017/library_db</code>
-                </p>
-              </div>
-              <button class="btn btn-outline btn-sm" onclick="Distribution.loadOverview()">🔄 Refresh Status</button>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 20px;" class="distribution-shards-grid">
-              <!-- Shard Replica Sets -->
-              <div>
-                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">
-                  Active / Configured Shard Replica Sets:
-                </div>
-                <div id="dist-shards-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
-              </div>
-
-              <!-- Shard Keys & Docker Quickstart -->
-              <div>
-                <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px;">
-                  Hashed Shard Keys & Distribution:
-                </div>
-                <div id="dist-shard-keys-list"></div>
-                <div class="card-subtle-box" style="margin-top: 12px; padding: 10px; border-radius: var(--radius-sm); font-size: 0.75rem;">
-                  <span style="color: var(--text-dim);">To spin up 2-shard + configsvr cluster:</span><br>
-                  <code style="color: var(--primary-600); font-weight: 700;">docker compose -f docker-compose-sharding.yml up -d</code>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Consistent Hash Ring Active Nodes & Key Allocation -->
-          <div class="card" style="margin-bottom: 28px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
-              <div>
-                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-main);">🌐 Consistent Hash Ring Topology & Key Allocation</h3>
-                <p style="font-size: 0.82rem; color: var(--text-muted);">
-                  Algorithm: <strong id="dist-algo">32-bit MurmurHash3</strong> | Live Catalogue & Member Records: <strong id="dist-total-keys" style="color: var(--primary-600);">0</strong> keys
-                </p>
-              </div>
-              <!-- Add Node Form -->
-              <div style="display: flex; gap: 8px;">
-                <input type="text" class="form-control" id="dist-new-node-input" placeholder="New node (e.g. storage-node-5)" style="width: 220px; font-size: 0.85rem;">
-                <button class="btn btn-primary btn-sm" onclick="Distribution.addNode()">+ Add Node</button>
-              </div>
-            </div>
-
-            <!-- Nodes Cards Grid -->
-            <div id="dist-nodes-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;"></div>
-          </div>
-
-          <!-- Interactive Key Routing & Scale Simulator -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;" class="distribution-sim-grid">
-            <!-- Key Route Inspector -->
-            <div class="card">
-              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">🎯 Single Key Routing Inspector</h3>
-              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
-                Trace how any book ID, ISBN, or member identifier maps onto the 32-bit circular hash ring:
-              </p>
-              <div class="form-group">
-                <input type="text" class="form-control" id="dist-route-input" placeholder="Type key (e.g. BK-RQwX87z9s2, 978-0132350884, MEM-001)...">
-              </div>
-              <div id="dist-route-result">
-                <div class="card-subtle-box" style="padding: 14px; border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-dim); text-align: center;">
-                  Enter a key above to trace its MurmurHash3 value and target partition node.
-                </div>
-              </div>
-            </div>
-
-            <!-- Dynamic Scale & Rebalance Simulation -->
-            <div class="card">
-              <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">📈 Scale Demonstration & Remapping Simulator</h3>
-              <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
-                Simulate adding or removing a storage node. Demonstrates that only ~1/(N+1) keys move, proving ring stability:
-              </p>
-              <div class="form-row" style="margin-bottom: 12px;">
-                <div class="form-group" style="flex: 2;">
-                  <label style="font-size: 0.75rem;">Node Identifier</label>
-                  <input type="text" class="form-control" id="dist-sim-node-input" value="storage-node-scale-demo">
-                </div>
-                <div class="form-group" style="flex: 1;">
-                  <label style="font-size: 0.75rem;">Operation</label>
-                  <select class="form-control" id="dist-sim-op-select">
-                    <option value="ADD">Add Node (+)</option>
-                    <option value="REMOVE">Remove Node (-)</option>
-                  </select>
-                </div>
-                <div class="form-group" style="flex: 1;">
-                  <label style="font-size: 0.75rem;">Test Keys</label>
-                  <input type="number" class="form-control" id="dist-sim-keys-input" value="2000" min="100" max="20000" step="500">
-                </div>
-              </div>
-              <div style="display: flex; gap: 8px;">
-                <button class="btn btn-primary btn-sm" style="flex: 2;" onclick="Distribution.runRebalanceSimulation()">
-                  🚀 Run Rebalance Simulation
-                </button>
-                <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="Distribution.runUniformityBenchmark()">
-                  ⚡ 10k Benchmark
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Simulation / Benchmark Output Container -->
-          <div id="dist-rebalance-result" class="card" style="display: none; margin-bottom: 28px;"></div>
-          <div id="dist-bench-report" class="card" style="display: none; margin-bottom: 28px;"></div>
-
-          <!-- Cooperation Architecture Card -->
-          <div class="card" style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(6, 182, 212, 0.04)); border-color: rgba(99, 102, 241, 0.25);">
-            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; color: var(--primary-600);">
-              🤝 Application Router & MongoDB Storage Architecture
-            </h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 0.85rem; line-height: 1.6; margin-bottom: 16px;">
-              <div class="card-subtle-box" style="padding: 14px; border-radius: var(--radius-md);">
-                <div style="font-weight: 700; color: var(--primary-600); margin-bottom: 6px;">Layer 7: Application Consistent Hashing Router</div>
-                <p id="dist-coop-app" style="color: var(--text-muted);">
-                  Routes catalogue cache keys, read requests, and microservice tasks across logical nodes with minimal key churn upon scaling.
-                </p>
-              </div>
-              <div class="card-subtle-box" style="padding: 14px; border-radius: var(--radius-md);">
-                <div style="font-weight: 700; color: #D97706; margin-bottom: 6px;">Layer 4: MongoDB Database Sharding (mongos)</div>
-                <p id="dist-coop-db" style="color: var(--text-muted);">
-                  Mongos router distributes BSON records across replica set shards based on hashed shard keys { bookId: 'hashed' } and { memberId: 'hashed' }.
-                </p>
-              </div>
-            </div>
-            <div class="card-subtle-box" style="font-size: 0.82rem; color: var(--text-main); padding: 12px; border-radius: var(--radius-sm);">
-              <strong>Synergy:</strong> <span id="dist-coop-synergy">Application consistent hashing ensures predictable cache locality and low latency; MongoDB sharding provides horizontal persistence capacity, high availability, and transparent chunk rebalancing.</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- ================= MEMBER 4: SHORT LINKS & RATE LIMITING ================= -->
-        <section id="view-shortlinks" class="view-section">
-          <div class="view-header">
-            <div>
-              <div class="view-header-title">
-                <span class="view-header-icon">🔗</span>
-                <h2>Rate Limiter & Base62 URL Shortener</h2>
-              </div>
-              <p class="view-header-subtitle">
-                Distributed Token Bucket algorithm powered by Redis Lua scripts, paired with a dual-tier persistence Base62 URL shortener and system evaluation metrics.
-              </p>
-            </div>
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-              <span id="rl-redis-status" class="status-pill active">🟢 REDIS LUA ENGINE ACTIVE</span>
-              <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadRateLimitStats(); ShortLinksUI.loadShortLinks();">🔄 Refresh</button>
-            </div>
-          </div>
-
-          <!-- Top Status / Diagnostic Metric Cards -->
-          <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 28px;">
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="rl-stat-capacity" style="font-size: 1.5rem; color: var(--primary-600);">100</div>
-                <p>Bucket Capacity (C)</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="rl-stat-refill" style="font-size: 1.5rem; color: #D97706;">10 / sec</div>
-                <p>Refill Rate (r)</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="rl-stat-total" style="font-size: 1.5rem; color: var(--primary-500);">0</div>
-                <p>Total Evaluated</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="rl-stat-allowed" style="font-size: 1.5rem; color: var(--success);">0</div>
-                <p>Allowed Requests</p>
-              </div>
-            </div>
-            <div class="card stat-card">
-              <div class="stat-content">
-                <div class="metric-highlight" id="rl-stat-rejected" style="font-size: 1.5rem; color: var(--danger);">0</div>
-                <p>Throttled (HTTP 429)</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Two Column Layout: Left = Rate Limiter Studio, Right = Base62 Generator -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;" class="member4-grid">
-            
-            <!-- Left: Token Bucket Interactive Studio -->
-            <div class="card">
-              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                  <span>🪣</span> Distributed Token Bucket Engine
-                </h3>
-                <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.resetRateLimiter()">Reset Bucket</button>
-              </div>
-
-              <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
-                Enforces continuous token replenishment using an atomic Redis Lua script (<code>rate_limiter.lua</code>).
-                When a burst exhausts the bucket, requests are safely throttled with HTTP <code>429 Too Many Requests</code> and an accurate <code>Retry-After</code> header.
-              </p>
-
-              <!-- Live Bucket Status -->
-              <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem; font-weight: 600;">
-                  <span>Available Token Reserve:</span>
-                  <span id="rl-bucket-tokens-display" style="color: var(--primary-600); font-family: var(--font-mono);">100 / 100 tokens</span>
-                </div>
-                <div style="background: rgba(226, 232, 240, 0.8); border-radius: 999px; height: 10px; overflow: hidden;">
-                  <div id="rl-bucket-fill" style="background: linear-gradient(90deg, #059669, #4F46E5); height: 100%; width: 100%; transition: width 0.3s ease;"></div>
-                </div>
-              </div>
-
-              <!-- Burst Simulator -->
-              <div style="border-top: 1px solid var(--border-color); padding-top: 14px; margin-top: 14px;">
-                <div style="font-size: 0.86rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px;">
-                  ⚡ Live Traffic Stress Simulator (Redis Lua Verification):
-                </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;">
-                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.runBurstSimulation(20)">20 Reqs (Normal)</button>
-                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.runBurstSimulation(50)">50 Reqs (Medium)</button>
-                  <button class="btn btn-primary btn-sm" id="btn-sim-burst" onclick="ShortLinksUI.runBurstSimulation(120)">120 Reqs (Burst Stress)</button>
-                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.runBurstSimulation(150)">150 Reqs (High Stress)</button>
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.testLiveHeaderInspection()">Probe Protected API (/api/books)</button>
-                  <span style="font-size: 0.78rem; color: var(--text-muted);">Inspects live X-RateLimit-* headers</span>
-                </div>
-                <div id="rl-header-test-result" style="display: none; margin-top: 10px;"></div>
-              </div>
-
-              <!-- Simulation Result Card -->
-              <div id="rl-sim-result" style="display: none;"></div>
-            </div>
-
-            <!-- Right: Base62 URL Shortener Generator -->
-            <div class="card">
-              <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                  <span>✂️</span> Base62 Short Link Generator
-                </h3>
-              </div>
-
-              <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
-                Generates compact, URL-safe alphanumeric slugs (<code>[0-9a-zA-Z]</code>) using dual-tier persistence: 
-                <strong>Redis</strong> for sub-millisecond 302 redirects and <strong>MongoDB</strong> for durable analytics.
-              </p>
-
-              <form id="shortlink-create-form">
-                <div class="form-group" style="margin-bottom: 12px;">
-                  <label style="font-size: 0.82rem; font-weight: 600;">Destination Target URL / Catalogue Path</label>
-                  <input type="text" class="form-control" id="shortlink-target-input" required placeholder="/#catalogue?id=BK-100" style="font-family: var(--font-mono); font-size: 0.85rem;">
-                </div>
-
-                <div class="form-row" style="margin-bottom: 14px;">
-                  <div class="form-group">
-                    <label style="font-size: 0.82rem; font-weight: 600;">Associated Book ID (Optional)</label>
-                    <input type="text" class="form-control" id="shortlink-bookid-input" placeholder="BK-100" style="font-family: var(--font-mono); font-size: 0.85rem;">
-                  </div>
-                  <div class="form-group">
-                    <label style="font-size: 0.82rem; font-weight: 600;">Link Title / Synopsis</label>
-                    <input type="text" class="form-control" id="shortlink-title-input" placeholder="Clean Architecture Guide">
-                  </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">⚡ Generate Short Link</button>
-              </form>
-
-              <!-- Created Link Preview -->
-              <div id="shortlink-created-display" style="display: none; margin-top: 16px;"></div>
-
-              <!-- Interactive Base62 Algorithm Visualizer -->
-              <div style="border-top: 1px solid var(--border-color); padding-top: 14px; margin-top: 16px;">
-                <div style="font-size: 0.84rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">
-                  🔢 Interactive Base62 Encoding Visualizer:
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <input type="number" class="form-control" id="base62-demo-num" placeholder="Enter integer e.g. 100042" style="font-family: var(--font-mono); font-size: 0.85rem; max-width: 220px;" value="100042">
-                  <div id="base62-live-result" style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-main);">
-                    Base62: <strong style="color: var(--primary-600);">q0w</strong> (Length: 3)
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- Active Short Links Table Panel -->
-          <div class="card" style="margin-bottom: 28px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
-              <div>
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
-                  <span>📋</span> Active Catalogue Short Links & Analytics
-                </h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
-                  Direct redirects via <code>GET /s/{code}</code> automatically log access metrics and increment MongoDB click counters.
-                </p>
-              </div>
-              <button class="btn btn-outline btn-sm" onclick="ShortLinksUI.loadShortLinks()">🔄 Refresh Table</button>
-            </div>
-
-            <div class="table-responsive">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Code</th>
-                    <th>Short URL (Redirect)</th>
-                    <th>Destination Target</th>
-                    <th>Click Analytics</th>
-                    <th>Created</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="shortlinks-table-body">
-                  <tr>
-                    <td colspan="6" style="text-align: center; padding: 20px; color: var(--text-muted);">
-                      Loading short links...
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Workstream 3: System Evaluation & Performance Benchmarks Panel -->
-          <div class="card" style="border-color: rgba(99, 102, 241, 0.25);">
-            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
-              <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-600); display: flex; align-items: center; gap: 8px;">
-                <span>📈</span> System Evaluation & Stress Test Profiles (Apache JMeter & Postman)
-              </h3>
-              <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">
-                Evaluates end-to-end distributed system performance across Members 1, 2, 3, and 4 under 3 distinct workload scenarios.
-              </p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 18px;" class="eval-scenarios-grid">
-              
-              <!-- Scenario 1 -->
-              <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px;">
-                <div style="font-weight: 700; color: var(--primary-600); margin-bottom: 6px; font-size: 0.92rem;">
-                  1. Baseline (Low Load)
-                </div>
-                <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">
-                  10 threads &bull; 100 requests &bull; <code>/api/search</code>, <code>/s/{code}</code>
-                </div>
-                <ul style="font-size: 0.78rem; color: var(--text-main); padding-left: 16px; margin: 0; line-height: 1.6;">
-                  <li>p95 latency: <strong>&lt; 15 ms</strong></li>
-                  <li>Cache hit ratio: <strong>100%</strong></li>
-                  <li>Error rate: <strong>0.00%</strong></li>
-                </ul>
-              </div>
-
-              <!-- Scenario 2 -->
-              <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px;">
-                <div style="font-weight: 700; color: #D97706; margin-bottom: 6px; font-size: 0.92rem;">
-                  2. Sustained (Medium Load)
-                </div>
-                <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">
-                  50 threads &bull; 1,000 requests &bull; Trie suggest & Catalogue
-                </div>
-                <ul style="font-size: 0.78rem; color: var(--text-main); padding-left: 16px; margin: 0; line-height: 1.6;">
-                  <li>Trie autocomplete: <strong>&lt; 5 ms</strong></li>
-                  <li>Redis hit ratio: <strong>&gt; 80%</strong></li>
-                  <li>HTTP 500 errors: <strong>0</strong></li>
-                </ul>
-              </div>
-
-              <!-- Scenario 3 -->
-              <div style="background: var(--bg-card-subtle); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px;">
-                <div style="font-weight: 700; color: #DC2626; margin-bottom: 6px; font-size: 0.92rem;">
-                  3. Stress (Rate Limit Test)
-                </div>
-                <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">
-                  150 threads &bull; 3,000 burst requests &bull; Protected APIs
-                </div>
-                <ul style="font-size: 0.78rem; color: var(--text-main); padding-left: 16px; margin: 0; line-height: 1.6;">
-                  <li>First 100 reqs: <strong>200 OK</strong></li>
-                  <li>Subsequent reqs: <strong>429 Throttled</strong></li>
-                  <li>DB connections: <strong>Healthy, 0 crashes</strong></li>
-                </ul>
-              </div>
-
-            </div>
-
-            <!-- Test Artifacts Reference -->
-            <div style="background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.2); border-radius: var(--radius-md); padding: 12px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-              <div>
-                <strong>Evaluation Test Artifacts Included:</strong>
-                <span style="color: var(--text-muted); margin-left: 6px;">
-                  <code>postman/Library_Management_System_Member4_Evaluation.postman_collection.json</code> | <code>jmeter/Member4_System_Evaluation_StressTest.jmx</code>
-                </span>
-              </div>
-              <span class="badge" style="background: var(--primary-100); color: var(--primary-700); font-weight: 700;">TEST PLANS READY</span>
-            </div>
-          </div>
-
         </section>
 
       </main>
@@ -1218,7 +1102,7 @@
   <div class="modal-overlay" id="pay-fine-modal">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3>Simulated Payment</h3>
+        <h3>Settle Fine</h3>
         <button class="btn-close-modal" onclick="App.closeAllModals()">&times;</button>
       </div>
       <div class="modal-body" id="pay-fine-modal-content"></div>

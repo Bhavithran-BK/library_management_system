@@ -152,7 +152,7 @@ public class RateLimiterService {
     public RateLimitStatsDto getStats() {
         RateLimitStatsDto dto = new RateLimitStatsDto();
         dto.setStatus(enabled ? "ACTIVE" : "DISABLED");
-        dto.setTargetModule("Member 4 Token Bucket Rate Limiter");
+        dto.setTargetModule("Distributed Token Bucket Rate Limiter");
         dto.setAlgorithm("Token Bucket (Redis Lua)");
         dto.setBucketCapacity(capacity);
         dto.setRefillRatePerSec(refillRatePerSec);
@@ -204,6 +204,26 @@ public class RateLimiterService {
             }
         } catch (Exception ignored) {
         }
+    }
+
+    /**
+     * Resets a specific simulated client's token bucket in Redis.
+     */
+    public void resetClient(String clientIdentifier) {
+        String key = clientIdentifier.startsWith("rate:") ? clientIdentifier : "rate:sim:" + clientIdentifier;
+        inMemoryFallbackBuckets.remove(key);
+        try {
+            stringRedisTemplate.delete(key);
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * Retrieves remaining token balance for a client without consuming tokens.
+     */
+    public RateLimitResult getClientRemaining(String clientIdentifier) {
+        String key = clientIdentifier.startsWith("rate:") ? clientIdentifier : "rate:sim:" + clientIdentifier;
+        return checkLimit(key, 0);
     }
 
     public boolean isEnabled() {

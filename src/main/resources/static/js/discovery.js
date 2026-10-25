@@ -108,13 +108,13 @@ const Discovery = {
           badgeEl.style.background = 'rgba(16, 185, 129, 0.2)';
           badgeEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
           badgeEl.style.color = '#10B981';
-          badgeEl.innerHTML = '⚡ REDIS CACHE HIT';
+          badgeEl.innerHTML = '⚡ FAST CACHE HIT';
         } else {
           badgeEl.className = 'badge-concept';
           badgeEl.style.background = 'rgba(245, 158, 11, 0.2)';
           badgeEl.style.borderColor = 'rgba(245, 158, 11, 0.4)';
           badgeEl.style.color = '#FBBF24';
-          badgeEl.innerHTML = '📦 REDIS CACHE MISS (Fetched from MongoDB)';
+          badgeEl.innerHTML = '📦 DATABASE RETRIEVAL';
         }
       }
 

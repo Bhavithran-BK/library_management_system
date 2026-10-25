@@ -52,10 +52,10 @@ const Distribution = {
     if (clusterBadge) {
       if (sharding.isShardedCluster) {
         clusterBadge.className = 'status-pill active';
-        clusterBadge.innerHTML = '🟢 MONGOS SHARDED CLUSTER ACTIVE';
+        clusterBadge.innerHTML = '🟢 SHARDED CLUSTER ACTIVE';
       } else {
-        clusterBadge.className = 'status-pill pending';
-        clusterBadge.innerHTML = '⚡ STANDALONE / LOCAL PROTOTYPE';
+        clusterBadge.className = 'status-pill active';
+        clusterBadge.innerHTML = '🟢 STORAGE NODE ACTIVE';
       }
     }
 

@@ -23,7 +23,7 @@ public class RedisConfig {
     @Value("${spring.data.redis.host:127.0.0.1}")
     private String redisHost;
 
-    @Value("${spring.data.redis.port:6379}")
+    @Value("${spring.data.redis.port:6380}")
     private int redisPort;
 
     @Value("${spring.data.redis.password:}")
@@ -35,7 +35,22 @@ public class RedisConfig {
         if (StringUtils.hasText(redisPassword)) {
             config.setPassword(redisPassword);
         }
-        return new LettuceConnectionFactory(config);
+
+        io.lettuce.core.SocketOptions socketOptions = io.lettuce.core.SocketOptions.builder()
+                .connectTimeout(java.time.Duration.ofMillis(2000))
+                .build();
+
+        io.lettuce.core.ClientOptions clientOptions = io.lettuce.core.ClientOptions.builder()
+                .socketOptions(socketOptions)
+                .build();
+
+        org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration clientConfig =
+                org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.builder()
+                        .commandTimeout(java.time.Duration.ofMillis(2000))
+                        .clientOptions(clientOptions)
+                        .build();
+
+        return new LettuceConnectionFactory(config, clientConfig);
     }
 
     @Bean

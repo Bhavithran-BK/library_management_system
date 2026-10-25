@@ -17,6 +17,15 @@ const Admin = {
     if (tab === 'loans') this.loadAllLoans();
     if (tab === 'reservations') this.loadAllReservations();
     if (tab === 'members') this.loadAllMembers();
+    if (tab === 'traffic' && typeof ShortLinksUI !== 'undefined') {
+      ShortLinksUI.loadRateLimitStats();
+    }
+    if (tab === 'storage' && typeof Distribution !== 'undefined') {
+      Distribution.init();
+    }
+    if (tab === 'idgen' && typeof Benchmark !== 'undefined') {
+      Benchmark.generateSampleId('book');
+    }
   },
 
   async loadBooksTable() {

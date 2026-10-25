@@ -31,7 +31,7 @@ public class RateLimitAdminController {
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<RateLimitStatsDto>> getRateLimitStats() {
         RateLimitStatsDto stats = rateLimiterService.getStats();
-        return ResponseEntity.ok(ApiResponse.success("Member 4 Rate Limiter live diagnostics", stats));
+        return ResponseEntity.ok(ApiResponse.success("Rate Limiter live diagnostics", stats));
     }
 
     /**
@@ -98,5 +98,34 @@ public class RateLimitAdminController {
         response.put("samplePoints", samples);
 
         return ResponseEntity.ok(ApiResponse.success("Burst rate limit simulation complete", response));
+    }
+
+    /**
+     * Retrieves live token bucket remaining capacity for a specific simulated client without consuming tokens.
+     */
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getClientRemaining(@PathVariable String clientId) {
+        RateLimitResult result = rateLimiterService.getClientRemaining(clientId);
+        return ResponseEntity.ok(ApiResponse.success("Client bucket status", Map.of(
+                "clientId", clientId,
+                "remainingTokens", result.getRemainingTokens(),
+                "allowed", result.isAllowed(),
+                "retryAfterSeconds", result.getRetryAfterSeconds(),
+                "capacity", rateLimiterService.getCapacity(),
+                "refillRatePerSec", rateLimiterService.getRefillRatePerSec()
+        )));
+    }
+
+    /**
+     * Resets a specific simulated client's token bucket in Redis.
+     */
+    @PostMapping("/client/{clientId}/reset")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> resetClient(@PathVariable String clientId) {
+        rateLimiterService.resetClient(clientId);
+        return ResponseEntity.ok(ApiResponse.success("Client bucket reset successfully", Map.of(
+                "clientId", clientId,
+                "remainingTokens", rateLimiterService.getCapacity(),
+                "capacity", rateLimiterService.getCapacity()
+        )));
     }
 }

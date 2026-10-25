@@ -67,10 +67,10 @@ const ShortLinksUI = {
     if (redisStatusEl) {
       if (data.redisConnected) {
         redisStatusEl.className = 'status-pill active';
-        redisStatusEl.innerHTML = '🟢 REDIS LUA ENGINE ACTIVE';
+        redisStatusEl.innerHTML = '🟢 TRAFFIC PROTECTION ACTIVE';
       } else {
         redisStatusEl.className = 'status-pill pending';
-        redisStatusEl.innerHTML = '🟡 MEMORY FALLBACK ACTIVE';
+        redisStatusEl.innerHTML = '🟡 IN-MEMORY PROTECTION ACTIVE';
       }
     }
 
@@ -86,7 +86,7 @@ const ShortLinksUI = {
     try {
       const res = await API.post('/api/admin/rate-limit/reset', {});
       if (res && res.success) {
-        API.toast('Token buckets and metrics successfully reset', 'success');
+        API.toast('Rate limiters and metrics successfully reset', 'success');
         this.loadRateLimitStats();
         const simResult = document.getElementById('rl-sim-result');
         if (simResult) simResult.style.display = 'none';
@@ -106,8 +106,8 @@ const ShortLinksUI = {
       simResult.innerHTML = `
         <div style="text-align: center; padding: 24px;">
           <div style="font-size: 1.5rem; margin-bottom: 8px;">⚡</div>
-          <div style="font-weight: 600; color: var(--primary-600);">Executing Burst of ${count} Concurrent Requests...</div>
-          <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">Evaluating Redis Lua token bucket atomic depletion</div>
+          <div style="font-weight: 600; color: var(--primary-600);">Simulating Burst of ${count} Concurrent Requests...</div>
+          <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">Evaluating token bucket capacity and rate limiting</div>
         </div>
       `;
     }
