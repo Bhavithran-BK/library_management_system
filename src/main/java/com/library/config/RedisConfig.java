@@ -20,6 +20,9 @@ import org.springframework.util.StringUtils;
 @Configuration
 public class RedisConfig {
 
+    @Value("${spring.data.redis.url:${REDIS_URL:}}")
+    private String redisUrl;
+
     @Value("${spring.data.redis.host:127.0.0.1}")
     private String redisHost;
 
@@ -31,9 +34,36 @@ public class RedisConfig {
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
-        if (StringUtils.hasText(redisPassword)) {
-            config.setPassword(redisPassword);
+        RedisStandaloneConfiguration config;
+        boolean useSsl = false;
+
+        if (StringUtils.hasText(redisUrl)) {
+            try {
+                java.net.URI uri = java.net.URI.create(redisUrl.trim());
+                useSsl = "rediss".equalsIgnoreCase(uri.getScheme());
+                String host = uri.getHost() != null ? uri.getHost() : "127.0.0.1";
+                int port = uri.getPort() > 0 ? uri.getPort() : (useSsl ? 6380 : 6379);
+                config = new RedisStandaloneConfiguration(host, port);
+                String userInfo = uri.getUserInfo();
+                if (StringUtils.hasText(userInfo)) {
+                    String[] parts = userInfo.split(":", 2);
+                    if (parts.length == 2) {
+                        config.setPassword(parts[1]);
+                    } else if (parts.length == 1) {
+                        config.setPassword(parts[0]);
+                    }
+                }
+            } catch (Exception e) {
+                config = new RedisStandaloneConfiguration(redisHost, redisPort);
+                if (StringUtils.hasText(redisPassword)) {
+                    config.setPassword(redisPassword);
+                }
+            }
+        } else {
+            config = new RedisStandaloneConfiguration(redisHost, redisPort);
+            if (StringUtils.hasText(redisPassword)) {
+                config.setPassword(redisPassword);
+            }
         }
 
         io.lettuce.core.SocketOptions socketOptions = io.lettuce.core.SocketOptions.builder()
@@ -44,13 +74,16 @@ public class RedisConfig {
                 .socketOptions(socketOptions)
                 .build();
 
-        org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration clientConfig =
+        org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder clientConfigBuilder =
                 org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.builder()
                         .commandTimeout(java.time.Duration.ofMillis(2000))
-                        .clientOptions(clientOptions)
-                        .build();
+                        .clientOptions(clientOptions);
 
-        return new LettuceConnectionFactory(config, clientConfig);
+        if (useSsl) {
+            clientConfigBuilder.useSsl();
+        }
+
+        return new LettuceConnectionFactory(config, clientConfigBuilder.build());
     }
 
     @Bean

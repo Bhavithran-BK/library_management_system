@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: library-management-system
+    runtime: docker
+    plan: free
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CACHE_ENABLED
+        value: "true"
+      - key: RATE_LIMIT_ENABLED
+        value: "true"

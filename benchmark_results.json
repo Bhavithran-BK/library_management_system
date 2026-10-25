@@ -1,0 +1,68 @@
+{
+  "baseline": {
+    "scenario": "Baseline implementation",
+    "concurrency": 100,
+    "total_requests": 400,
+    "avg_latency": 1084.4953867480217,
+    "median_latency": 1029.0204999619164,
+    "p95_latency": 1901.2259999872185,
+    "p99_latency": 2579.505500034429,
+    "throughput": 70.2666348269078,
+    "error_rate": 0.0,
+    "status_counts": {
+      "200": 400
+    },
+    "rate_limit_count": 0,
+    "duration": 5.692602199967951
+  },
+  "normal": {
+    "scenario": "Normal workload",
+    "concurrency": 25,
+    "total_requests": 500,
+    "avg_latency": 337.58649360050913,
+    "median_latency": 366.73375000827946,
+    "p95_latency": 597.9851000010967,
+    "p99_latency": 780.7719999691471,
+    "throughput": 67.9681534944696,
+    "error_rate": 0.0,
+    "status_counts": {
+      "200": 500
+    },
+    "rate_limit_count": 0,
+    "duration": 7.3563864000025205
+  },
+  "increased": {
+    "scenario": "Increased workload",
+    "concurrency": 150,
+    "total_requests": 600,
+    "avg_latency": 250.81576400077515,
+    "median_latency": 241.34325003251433,
+    "p95_latency": 421.65019997628406,
+    "p99_latency": 549.0205000387505,
+    "throughput": 106.53326429220388,
+    "error_rate": 43.666666666666664,
+    "status_counts": {
+      "429": 262,
+      "200": 338
+    },
+    "rate_limit_count": 262,
+    "duration": 5.632043700024951
+  },
+  "cache_enabled": {
+    "scenario": "Cache-enabled workload",
+    "concurrency": 100,
+    "total_requests": 1000,
+    "avg_latency": 1255.587407499086,
+    "median_latency": 1128.5775500000454,
+    "p95_latency": 2339.3308999948204,
+    "p99_latency": 2406.7601999850012,
+    "throughput": 62.03820351031989,
+    "error_rate": 0.0,
+    "status_counts": {
+      "200": 1000
+    },
+    "rate_limit_count": 0,
+    "duration": 16.119099900010042
+  },
+  "cache_hit_ratio": 100.0
+}
